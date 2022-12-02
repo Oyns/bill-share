@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -13,7 +14,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(of = "id")
 @Builder
-public class ItemDto {
+public class ItemWithUsersDto {
     UUID id;
     @NotBlank
     String name;
@@ -21,4 +22,18 @@ public class ItemDto {
     Integer amount;
     Boolean isEqually;
     Double discount;
+    Set<User> users;
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    @EqualsAndHashCode(of = "id")
+    @Builder
+    public static class User {
+        UUID id;
+        @NotBlank
+        String name;
+    }
 }

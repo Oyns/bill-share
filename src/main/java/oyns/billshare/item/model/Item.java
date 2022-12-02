@@ -2,6 +2,7 @@ package oyns.billshare.item.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -10,29 +11,31 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Builder
 @Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "items")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, unique = true)
-    private UUID id;
+    UUID id;
 
     @Column(name = "item_name", nullable = false)
-    private String name;
+    String name;
 
-    @Column(name = "price", nullable = false)
-    private Double price;
+    @Column(name = "price")
+    Double price;
 
     @Column(name = "amount")
-    private Integer amount;
+    Integer amount;
 
     @Column(name = "equally")
-    private Boolean isEqually;
+    Boolean isEqually;
 
     @Column(name = "discount")
-    private Double discount;
+    Double discount;
 
     @Override
     public boolean equals(Object o) {

@@ -1,8 +1,13 @@
 package oyns.billshare.party.mapper;
 
 import org.springframework.stereotype.Component;
+import oyns.billshare.item.dto.ItemDto;
+import oyns.billshare.party.dto.PartyCreationDto;
 import oyns.billshare.party.dto.PartyDto;
 import oyns.billshare.party.model.Party;
+import oyns.billshare.user.dto.UserDto;
+
+import java.util.ArrayList;
 
 @Component
 public class PartyMapper {
@@ -21,6 +26,35 @@ public class PartyMapper {
                 .name(party.getName())
                 .isPaid(party.getIsPaid())
                 .initiator(party.getInitiator())
+                .build();
+    }
+
+    public static PartyCreationDto toPartyCreationDto(Party party, UserDto user, ItemDto item) {
+        return PartyCreationDto.builder()
+                .id(party.getId())
+                .name(party.getName())
+                .owner(PartyCreationDto.User.builder()
+                        .id(user.getId())
+                        .userName(user.getUserName())
+                        .build())
+//                .items(List.of(PartyCreationDto.Item.builder()
+//                        .id(item.getId())
+//                        .name(item.getName())
+//                        .price(item.getPrice())
+//                        .amount(item.getAmount())
+//                        .isEqually(item.getIsEqually())
+//                        .discount(item.getDiscount())))
+                .users(new ArrayList<>())
+                .items(new ArrayList<>())
+                .build();
+    }
+
+    public static Party toPartyFromCreationDto(PartyCreationDto partyCreationDto) {
+        return Party.builder()
+                .id(partyCreationDto.getId())
+                .name(partyCreationDto.getName())
+                .isPaid(null)
+                .initiator(partyCreationDto.getOwner().getId())
                 .build();
     }
 }

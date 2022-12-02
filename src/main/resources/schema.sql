@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS items
 (
     id        uuid,
     item_name VARCHAR(255) NOT NULL,
-    price     DECIMAL      NOT NULL,
+    price     DECIMAL,
     amount    INTEGER,
     equally   BOOLEAN,
     discount  DECIMAL,
