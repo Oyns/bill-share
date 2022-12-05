@@ -1,10 +1,7 @@
 package oyns.billshare.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import oyns.billshare.user.dto.UserDto;
 import oyns.billshare.user.service.UserServiceImpl;
 
@@ -17,10 +14,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @MessageMapping(value = "")
-    @SendTo(value = "")
-    public UserDto saveUser(@RequestBody UserDto userDto) {
-        log.info("Save user={}", userDto);
-        return userService.saveUser(userDto);
+    @PatchMapping("/party/{id}")
+    public UserDto saveUser(@RequestBody UserDto userDto, @PathVariable(name = "id") String partyId) {
+        log.info("Save user={}, partyId={}", userDto, partyId);
+        return userService.saveUser(userDto, partyId);
     }
 }

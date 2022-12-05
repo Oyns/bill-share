@@ -3,6 +3,7 @@ package oyns.billshare.party.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import oyns.billshare.item.model.Item;
 import oyns.billshare.user.model.User;
 
 import java.util.Objects;
@@ -38,6 +39,11 @@ public class Party {
     @JoinTable(name = "users_party", joinColumns = @JoinColumn(name = "party_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     Set<User> users;
+    @ToString.Exclude
+    @ManyToMany
+    @JoinTable(name = "items_party", joinColumns = @JoinColumn(name = "party_id"),
+    inverseJoinColumns = @JoinColumn(name = "item_id"))
+    Set<Item> items;
 
     @Override
     public boolean equals(Object o) {
