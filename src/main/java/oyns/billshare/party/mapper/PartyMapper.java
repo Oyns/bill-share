@@ -29,21 +29,21 @@ public class PartyMapper {
                 .build();
     }
 
-    public static PartyCreationDto toPartyCreationDto(Party party, UserDto user, ItemDto item) {
+    public static PartyCreationDto toPartyCreationDto(Party party, UserDto userDto, ItemDto itemDto) {
         return PartyCreationDto.builder()
                 .id(party.getId())
                 .name(party.getName())
                 .owner(PartyCreationDto.User.builder()
-                        .id(user.getId())
-                        .userName(user.getUserName())
+                        .id(userDto.getId())
+                        .userName(userDto.getUserName())
                         .build())
 //                .items(List.of(PartyCreationDto.Item.builder()
-//                        .id(item.getId())
-//                        .name(item.getName())
-//                        .price(item.getPrice())
-//                        .amount(item.getAmount())
-//                        .isEqually(item.getIsEqually())
-//                        .discount(item.getDiscount())))
+//                        .id(itemDto.getId())
+//                        .name(itemDto.getName())
+//                        .price(itemDto.getPrice())
+//                        .amount(itemDto.getAmount())
+//                        .isEqually(itemDto.getIsEqually())
+//                        .discount(itemDto.getDiscount())))
                 .users(new ArrayList<>())
                 .items(new ArrayList<>())
                 .build();

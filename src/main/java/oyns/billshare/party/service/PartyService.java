@@ -6,4 +6,6 @@ import oyns.billshare.user.dto.UserDto;
 public interface PartyService {
 
     PartyCreationDto saveParty(UserDto userDto);
+
+    PartyCreationDto getPartyById(String partyId);
 }
