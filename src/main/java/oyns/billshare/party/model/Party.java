@@ -35,12 +35,12 @@ public class Party {
     UUID initiator;
 
     @ToString.Exclude
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_party", joinColumns = @JoinColumn(name = "party_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     Set<User> users;
     @ToString.Exclude
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "items_party", joinColumns = @JoinColumn(name = "party_id"),
     inverseJoinColumns = @JoinColumn(name = "item_id"))
     Set<Item> items;

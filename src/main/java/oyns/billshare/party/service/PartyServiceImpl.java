@@ -3,6 +3,7 @@ package oyns.billshare.party.service;
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
 import oyns.billshare.item.dto.ItemDto;
+import oyns.billshare.item.model.Item;
 import oyns.billshare.party.dto.PartyCreationDto;
 import oyns.billshare.party.model.Party;
 import oyns.billshare.party.repository.PartyRepository;
@@ -10,6 +11,7 @@ import oyns.billshare.user.dto.UserDto;
 import oyns.billshare.user.model.User;
 import oyns.billshare.user.repository.UserRepository;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static oyns.billshare.party.mapper.PartyMapper.*;
@@ -41,6 +43,17 @@ public class PartyServiceImpl implements PartyService {
                 .build();
         return toPartyCreationDto(partyRepository
                 .save(toPartyFromCreationDto(partyDto)), userDto, itemDto);
+    }
+
+    @Override
+    public void saveNewUserToParty(UserDto userDto, String partyId) {
+        Party party = partyRepository.findById(UUID.fromString(partyId))
+                .orElseThrow(() -> new ValidationException("Нет пати с таким id."));
+        User user = userRepository.save(toUser(userDto));
+        Set<User> users = party.getUsers();
+        users.add(user);
+        party.setUsers(users);
+        partyRepository.save(party);
     }
 
     @Override

@@ -7,5 +7,7 @@ public interface PartyService {
 
     PartyCreationDto saveParty(UserDto userDto);
 
+    void saveNewUserToParty(UserDto userDto, String partyId);
+
     PartyCreationDto getPartyById(String partyId);
 }
