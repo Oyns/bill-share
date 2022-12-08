@@ -10,4 +10,8 @@ public interface PartyService {
     void saveNewUserToParty(UserDto userDto, String partyId);
 
     PartyCreationDto getPartyById(String partyId);
+
+    void deleteUserFromParty(String userId, String partyId);
+
+    void deleteItemFromParty(String itemId, String partyId);
 }

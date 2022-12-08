@@ -2,6 +2,7 @@ package oyns.billshare.party.service;
 
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
+import oyns.billshare.item.model.Item;
 import oyns.billshare.party.dto.PartyCreationDto;
 import oyns.billshare.party.model.Party;
 import oyns.billshare.party.repository.PartyRepository;
@@ -59,5 +60,25 @@ public class PartyServiceImpl implements PartyService {
                 .orElseThrow(() -> new ValidationException("Нет пати с таким id"));
         return toPartyCreationDto(party, toUserDto(userRepository.findById(party.getInitiator())
                 .orElseThrow(() -> new ValidationException("Нет инициатора с таким id"))));
+    }
+
+    @Override
+    public void deleteUserFromParty(String userId, String partyId) {
+        Party party = partyRepository.findById(UUID.fromString(partyId))
+                .orElseThrow(() -> new ValidationException("Нет пати с таким id"));
+        Set<User> users = party.getUsers();
+        users.removeIf(user -> user.getId().equals(UUID.fromString(userId)));
+        party.setUsers(users);
+        partyRepository.save(party);
+    }
+
+    @Override
+    public void deleteItemFromParty(String itemId, String partyId) {
+        Party party = partyRepository.findById(UUID.fromString(partyId))
+                .orElseThrow(() -> new ValidationException("Нет пати с таким id"));
+        Set<Item> items = party.getItems();
+        items.removeIf(item -> item.getId().equals(UUID.fromString(itemId)));
+        party.setItems(items);
+        partyRepository.save(party);
     }
 }
