@@ -36,6 +36,9 @@ public class Item {
 
     @Column(name = "discount")
     Double discount;
+    @Column(name = "user_id")
+    @JoinTable(name = "users", joinColumns = @JoinColumn(name = "id"))
+    UUID user;
 
     @Override
     public boolean equals(Object o) {

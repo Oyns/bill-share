@@ -21,4 +21,6 @@ public class ItemDto {
     Integer amount;
     Boolean isEqually;
     Double discount;
+
+    UUID user;
 }

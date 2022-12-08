@@ -10,7 +10,6 @@ import oyns.billshare.user.model.User;
 import oyns.billshare.user.repository.UserRepository;
 
 import java.util.Set;
-import java.util.UUID;
 
 import static oyns.billshare.user.mapper.UserMapper.toUser;
 import static oyns.billshare.user.mapper.UserMapper.toUserDto;
@@ -22,8 +21,8 @@ public class UserServiceImpl implements UserService {
     private final PartyRepository partyRepository;
 
     @Override
-    public UserDto saveUser(UserDto userDto, String partyId) {
-        Party party = partyRepository.findById(UUID.fromString(partyId))
+    public UserDto saveUser(UserDto userDto) {
+        Party party = partyRepository.findById(userDto.getPartyId())
                 .orElseThrow(() -> new ValidationException("Нет пати с таким id"));
         Set<User> users = party.getUsers();
         User user = userRepository.save(toUser(userDto));

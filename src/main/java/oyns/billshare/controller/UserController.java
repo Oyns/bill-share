@@ -14,9 +14,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PatchMapping("/party/{id}")
-    public UserDto saveUser(@RequestBody UserDto userDto, @PathVariable(name = "id") String partyId) {
-        log.info("Save user={}, partyId={}", userDto, partyId);
-        return userService.saveUser(userDto, partyId);
+    @PostMapping("/user")
+    @CrossOrigin(origins = "*")
+    public UserDto saveUser(@RequestBody UserDto userDto) {
+        log.info("Save user={}, partyId={}", userDto, userDto.getPartyId());
+        return userService.saveUser(userDto);
     }
 }

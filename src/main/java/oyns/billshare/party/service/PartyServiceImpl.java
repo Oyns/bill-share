@@ -2,8 +2,6 @@ package oyns.billshare.party.service;
 
 import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Service;
-import oyns.billshare.item.dto.ItemDto;
-import oyns.billshare.item.model.Item;
 import oyns.billshare.party.dto.PartyCreationDto;
 import oyns.billshare.party.model.Party;
 import oyns.billshare.party.repository.PartyRepository;
@@ -14,8 +12,10 @@ import oyns.billshare.user.repository.UserRepository;
 import java.util.Set;
 import java.util.UUID;
 
-import static oyns.billshare.party.mapper.PartyMapper.*;
-import static oyns.billshare.user.mapper.UserMapper.*;
+import static oyns.billshare.party.mapper.PartyMapper.toPartyCreationDto;
+import static oyns.billshare.party.mapper.PartyMapper.toPartyFromCreationDto;
+import static oyns.billshare.user.mapper.UserMapper.toUser;
+import static oyns.billshare.user.mapper.UserMapper.toUserDto;
 
 @Service
 public class PartyServiceImpl implements PartyService {
@@ -33,16 +33,13 @@ public class PartyServiceImpl implements PartyService {
         userDto = toUserDto(user);
         PartyCreationDto partyDto = PartyCreationDto.builder()
                 .name(userDto.getUserName())
-                .owner(PartyCreationDto.User.builder()
+                .owner(User.builder()
                         .id(userDto.getId())
-                        .userName(userDto.getUserName())
+                        .name(userDto.getUserName())
                         .build())
                 .build();
-        ItemDto itemDto = ItemDto.builder()
-                .name(userDto.getUserName())
-                .build();
         return toPartyCreationDto(partyRepository
-                .save(toPartyFromCreationDto(partyDto)), userDto, itemDto);
+                .save(toPartyFromCreationDto(partyDto)), userDto);
     }
 
     @Override
@@ -60,6 +57,7 @@ public class PartyServiceImpl implements PartyService {
     public PartyCreationDto getPartyById(String partyId) {
         Party party = partyRepository.findById(UUID.fromString(partyId))
                 .orElseThrow(() -> new ValidationException("Нет пати с таким id"));
-        return toPartyCreationDto(party, new UserDto(), new ItemDto());
+        return toPartyCreationDto(party, toUserDto(userRepository.findById(party.getInitiator())
+                .orElseThrow(() -> new ValidationException("Нет инициатора с таким id"))));
     }
 }

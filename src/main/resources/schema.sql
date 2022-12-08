@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS items
     amount    INTEGER,
     equally   BOOLEAN,
     discount  DECIMAL,
+    user_id   uuid,
     CONSTRAINT pk_items PRIMARY KEY (id)
 );
 

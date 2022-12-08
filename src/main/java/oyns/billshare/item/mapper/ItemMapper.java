@@ -17,6 +17,7 @@ public class ItemMapper {
                 .amount(itemDto.getAmount())
                 .isEqually(itemDto.getIsEqually())
                 .discount(itemDto.getDiscount())
+                .user(itemDto.getUser())
                 .build();
     }
 
@@ -28,6 +29,7 @@ public class ItemMapper {
                 .amount(item.getAmount())
                 .isEqually(item.getIsEqually())
                 .discount(item.getDiscount())
+                .user(item.getUser())
                 .build();
     }
 
