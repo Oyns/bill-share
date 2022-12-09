@@ -1,8 +1,8 @@
 package oyns.billshare.user.service;
 
-import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import oyns.billshare.exception.EntityNotFoundException;
 import oyns.billshare.party.model.Party;
 import oyns.billshare.party.repository.PartyRepository;
 import oyns.billshare.user.dto.UserDto;
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto saveUser(UserDto userDto) {
         Party party = partyRepository.findById(userDto.getPartyId())
-                .orElseThrow(() -> new ValidationException("Нет пати с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("Нет пати с таким id"));
         Set<User> users = party.getUsers();
         User user = userRepository.save(toUser(userDto));
         users.add(user);

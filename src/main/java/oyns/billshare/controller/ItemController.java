@@ -1,5 +1,6 @@
 package oyns.billshare.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +17,7 @@ public class ItemController {
     private final ItemServiceImpl itemService;
 
     @PostMapping("/party/{partyId}/users/{userId}")
-    public ItemDto saveItem(@RequestBody ItemDto itemDto,
+    public ItemDto saveItem(@RequestBody @Valid ItemDto itemDto,
                             @PathVariable("partyId") String partyId,
                             @PathVariable("userId") String userId) {
         log.info("Save item={}, partyId={}, userId={}", itemDto, partyId, userId);
