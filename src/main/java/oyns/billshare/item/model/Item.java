@@ -3,8 +3,10 @@ package oyns.billshare.item.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import oyns.billshare.user.model.User;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -39,6 +41,11 @@ public class Item {
     @Column(name = "user_id")
     @JoinTable(name = "users", joinColumns = @JoinColumn(name = "id"))
     UUID user;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_items", joinColumns = @JoinColumn(name = "item_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @ToString.Exclude
+    Set<User> users;
 
     @Override
     public boolean equals(Object o) {

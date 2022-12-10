@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -23,4 +24,19 @@ public class ItemDto {
     Double discount;
 
     UUID user;
+    Set<User> users;
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    @EqualsAndHashCode(of = "id")
+    @Builder
+    public static class User {
+        UUID id;
+        @NotBlank
+        String name;
+        Integer value;
+    }
 }

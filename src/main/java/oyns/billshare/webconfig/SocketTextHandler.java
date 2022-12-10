@@ -9,7 +9,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import oyns.billshare.item.dto.ItemDto;
 import oyns.billshare.item.service.ItemServiceImpl;
-import oyns.billshare.party.dto.PartyCreationDto;
+import oyns.billshare.party.dto.FullPartyDto;
 import oyns.billshare.party.service.PartyServiceImpl;
 import oyns.billshare.user.dto.UserDto;
 
@@ -54,8 +54,8 @@ public class SocketTextHandler extends TextWebSocketHandler {
     private JSONObject packingToJson(TextMessage message) {
         String payload = message.getPayload();
         JSONObject jsonObject = new JSONObject(payload);
-        PartyCreationDto partyCreationDto = partyService.getPartyById(jsonObject.get("partyId").toString());
-        partyCreationDto.setType(jsonObject.get("type").toString());
-        return new JSONObject(partyCreationDto);
+        FullPartyDto fullPartyDto = partyService.getPartyById(jsonObject.get("partyId").toString());
+        fullPartyDto.setType(jsonObject.get("type").toString());
+        return new JSONObject(fullPartyDto);
     }
 }

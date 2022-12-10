@@ -4,7 +4,8 @@ import org.springframework.stereotype.Service;
 import oyns.billshare.exception.EntityNotFoundException;
 import oyns.billshare.exception.ValidationException;
 import oyns.billshare.item.model.Item;
-import oyns.billshare.party.dto.PartyCreationDto;
+import oyns.billshare.party.dto.FullPartyDto;
+import oyns.billshare.party.dto.NewPartyDto;
 import oyns.billshare.party.model.Party;
 import oyns.billshare.party.repository.PartyRepository;
 import oyns.billshare.user.dto.UserDto;
@@ -13,9 +14,10 @@ import oyns.billshare.user.repository.UserRepository;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import static oyns.billshare.party.mapper.PartyMapper.toPartyCreationDto;
-import static oyns.billshare.party.mapper.PartyMapper.toPartyFromCreationDto;
+import static oyns.billshare.party.mapper.PartyMapper.toFullPartyDto;
+import static oyns.billshare.party.mapper.PartyMapper.toPartyFromFullPartyDto;
 import static oyns.billshare.user.mapper.UserMapper.toUser;
 import static oyns.billshare.user.mapper.UserMapper.toUserDto;
 
@@ -30,18 +32,23 @@ public class PartyServiceImpl implements PartyService {
     }
 
     @Override
-    public PartyCreationDto saveParty(UserDto userDto) {
-        User user = userRepository.save(toUser(userDto));
-        userDto = toUserDto(user);
-        PartyCreationDto partyDto = PartyCreationDto.builder()
-                .name(userDto.getUserName())
-                .owner(User.builder()
-                        .id(userDto.getId())
-                        .name(userDto.getUserName())
+    public FullPartyDto saveParty(NewPartyDto newPartyDto) {
+        User user = userRepository.save(User.builder()
+                .name(newPartyDto.getUserName())
+                .build());
+        FullPartyDto partyDto = FullPartyDto.builder()
+                .name(newPartyDto.getPartyName())
+                .owner(FullPartyDto.User.builder()
+                        .id(user.getId())
+                        .name(newPartyDto.getUserName())
                         .build())
+                .users(Set.of(FullPartyDto.User.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .build()))
                 .build();
-        return toPartyCreationDto(partyRepository
-                .save(toPartyFromCreationDto(partyDto)), userDto);
+        return toFullPartyDto(partyRepository
+                .save(toPartyFromFullPartyDto(partyDto)), newPartyDto);
     }
 
     @Override
@@ -56,11 +63,28 @@ public class PartyServiceImpl implements PartyService {
     }
 
     @Override
-    public PartyCreationDto getPartyById(String partyId) {
+    public FullPartyDto getPartyById(String partyId) {
         Party party = partyRepository.findById(UUID.fromString(partyId))
                 .orElseThrow(() -> new EntityNotFoundException("Нет пати с таким id"));
-        return toPartyCreationDto(party, toUserDto(userRepository.findById(party.getInitiator())
-                .orElseThrow(() -> new EntityNotFoundException("Нет инициатора с таким id"))));
+        UserDto userDto = toUserDto(userRepository.findById(party.getInitiator())
+                .orElseThrow(() -> new EntityNotFoundException("Нет инициатора с таким id")));
+        FullPartyDto fullPartyDto = toFullPartyDto(party,
+                new NewPartyDto(userDto.getId(), userDto.getUserName(), party.getName()));
+        Set<FullPartyDto.User> users = fullPartyDto.getUsers();
+        if (party.getItems().size() != 0) {
+            for (FullPartyDto.User user : users) {
+                Set<Item> items = party.getItems().stream().
+                        filter(item -> item.getUser().equals(user.getId()))
+                        .collect(Collectors.toSet());
+                user.setValue(items.size());
+            }
+            fullPartyDto.setUsers(users);
+            for (FullPartyDto.Item item : fullPartyDto.getItems()) {
+                item.getUsers().forEach(user -> user.setValue(userRepository
+                        .findAmountOfItemsForUser(item.getId(), user.getId())));
+            }
+        }
+        return fullPartyDto;
     }
 
     @Override

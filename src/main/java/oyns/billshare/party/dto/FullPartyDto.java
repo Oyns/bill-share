@@ -1,4 +1,4 @@
-package oyns.billshare.item.dto;
+package oyns.billshare.party.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -14,15 +14,14 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(of = "id")
 @Builder
-public class ItemWithUsersDto {
+public class FullPartyDto {
     UUID id;
     @NotBlank
     String name;
-    Double price;
-    Integer amount;
-    Boolean isEqually;
-    Double discount;
+    User owner;
     Set<User> users;
+    Set<Item> items;
+    String type; // <---- event type
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -35,5 +34,25 @@ public class ItemWithUsersDto {
         UUID id;
         @NotBlank
         String name;
+        Integer value;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    @EqualsAndHashCode(of = "id")
+    @Builder
+    public static class Item{
+        UUID id;
+        @NotBlank
+        String name;
+        Double price;
+        Integer amount;
+        Boolean isEqually;
+        Double discount;
+        UUID user;
+        Set<FullPartyDto.User> users;
     }
 }

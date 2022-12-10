@@ -2,14 +2,22 @@ package oyns.billshare.item.mapper;
 
 import org.springframework.stereotype.Component;
 import oyns.billshare.item.dto.ItemDto;
-import oyns.billshare.item.dto.ItemWithUsersDto;
 import oyns.billshare.item.model.Item;
+import oyns.billshare.user.model.User;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class ItemMapper {
     public static Item toItem(ItemDto itemDto) {
+        Set<User> users = new HashSet<>();
+        if (itemDto.getUsers() != null) {
+            users = itemDto.getUsers().stream()
+                    .map(ItemMapper::toItemDtoUser)
+                    .collect(Collectors.toSet());
+        }
         return Item.builder()
                 .id(itemDto.getId())
                 .name(itemDto.getName())
@@ -18,6 +26,7 @@ public class ItemMapper {
                 .isEqually(itemDto.getIsEqually())
                 .discount(itemDto.getDiscount())
                 .user(itemDto.getUser())
+                .users(users)
                 .build();
     }
 
@@ -33,15 +42,10 @@ public class ItemMapper {
                 .build();
     }
 
-    public static ItemWithUsersDto toItemWithUsersDto(Item item, Set<ItemWithUsersDto.User> users) {
-        return ItemWithUsersDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .price(item.getPrice())
-                .amount(item.getAmount())
-                .isEqually(item.getIsEqually())
-                .discount(item.getDiscount())
-                .users(users)
+    public static User toItemDtoUser(ItemDto.User user) {
+        return User.builder()
+                .id(user.getId())
+                .name(user.getName())
                 .build();
     }
 }

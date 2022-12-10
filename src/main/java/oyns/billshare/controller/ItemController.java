@@ -20,7 +20,6 @@ public class ItemController {
     public ItemDto saveItem(@RequestBody @Valid ItemDto itemDto,
                             @PathVariable("partyId") String partyId,
                             @PathVariable("userId") String userId) {
-        log.info("Save item={}, partyId={}, userId={}", itemDto, partyId, userId);
         return itemService.saveItem(itemDto, partyId, userId);
     }
 }

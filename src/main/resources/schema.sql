@@ -1,8 +1,9 @@
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS items CASCADE;
--- DROP TABLE IF EXISTS parties CASCADE;
+DROP TABLE IF EXISTS parties CASCADE;
 DROP TABLE IF EXISTS users_party CASCADE;
 DROP TABLE IF EXISTS items_party CASCADE;
+DROP TABLE IF EXISTS users_items CASCADE;
 
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -58,4 +59,13 @@ CREATE TABLE IF NOT EXISTS items_party
     CONSTRAINT pk_items_party PRIMARY KEY (party_id, item_id),
     CONSTRAINT fk_items FOREIGN KEY (item_id) REFERENCES items (id),
     CONSTRAINT fk_parties FOREIGN KEY (party_id) REFERENCES parties (id)
+);
+
+CREATE TABLE IF NOT EXISTS users_items
+(
+    user_id uuid,
+    item_id uuid,
+    CONSTRAINT pk_users_items PRIMARY KEY (user_id, item_id),
+    CONSTRAINT fk_items FOREIGN KEY (item_id) REFERENCES items (id),
+    CONSTRAINT fk_users FOREIGN KEY (user_id) REFERENCES users (id)
 );
