@@ -3,6 +3,7 @@ package oyns.billshare.controller;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import oyns.billshare.user.dto.NewUserDto;
 import oyns.billshare.user.dto.UserDto;
 import oyns.billshare.user.service.UserServiceImpl;
 
@@ -17,8 +18,8 @@ public class UserController {
 
     @PostMapping("/user")
     @CrossOrigin(origins = "*")
-    public UserDto saveUser(@RequestBody @Valid UserDto userDto) {
-        log.info("Save user={}, partyId={}", userDto, userDto.getPartyId());
-        return userService.saveUser(userDto);
+    public UserDto saveUser(@RequestBody @Valid NewUserDto newUserDto) {
+        log.info("Save user={}, partyId={}", newUserDto, newUserDto.getPartyId());
+        return userService.saveUser(newUserDto);
     }
 }

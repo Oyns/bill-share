@@ -69,7 +69,6 @@ public class PartyServiceImpl implements PartyService {
                 .orElseThrow(() -> new EntityNotFoundException("Нет инициатора с таким id")));
         FullPartyDto fullPartyDto = toFullPartyDto(party,
                 new User(userDto.getId(), userDto.getName()));
-
         Set<FullPartyDto.Item> items = fullPartyDto.getItems();
         for (FullPartyDto.Item item : items) {
             item.getUsers().forEach(fullUserDto -> fullUserDto.setValue(userRepository
