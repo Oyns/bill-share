@@ -18,8 +18,8 @@ public class FullPartyDto {
     UUID id;
     @NotBlank
     String name;
-    User owner;
-    Set<User> users;
+    ShortUserDto owner;
+    Set<ShortUserDto> users;
     Set<Item> items;
     String type; // <---- event type
 
@@ -30,7 +30,7 @@ public class FullPartyDto {
     @FieldDefaults(level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(of = "id")
     @Builder
-    public static class User {
+    public static class FullUserDto {
         UUID id;
         @NotBlank
         String name;
@@ -44,7 +44,20 @@ public class FullPartyDto {
     @FieldDefaults(level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(of = "id")
     @Builder
-    public static class Item{
+    public static class ShortUserDto {
+        UUID id;
+        @NotBlank
+        String name;
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    @EqualsAndHashCode(of = "id")
+    @Builder
+    public static class Item {
         UUID id;
         @NotBlank
         String name;
@@ -53,6 +66,6 @@ public class FullPartyDto {
         Boolean isEqually;
         Double discount;
         UUID user;
-        Set<FullPartyDto.User> users;
+        Set<FullUserDto> users;
     }
 }

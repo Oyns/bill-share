@@ -14,7 +14,6 @@ import oyns.billshare.user.repository.UserRepository;
 
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static oyns.billshare.party.mapper.PartyMapper.toFullPartyDto;
 import static oyns.billshare.party.mapper.PartyMapper.toPartyFromFullPartyDto;
@@ -34,15 +33,15 @@ public class PartyServiceImpl implements PartyService {
     @Override
     public FullPartyDto saveParty(NewPartyDto newPartyDto) {
         User user = userRepository.save(User.builder()
-                .name(newPartyDto.getUserName())
+                .name(newPartyDto.getName())
                 .build());
         FullPartyDto partyDto = FullPartyDto.builder()
                 .name(newPartyDto.getPartyName())
-                .owner(FullPartyDto.User.builder()
+                .owner(FullPartyDto.ShortUserDto.builder()
                         .id(user.getId())
-                        .name(newPartyDto.getUserName())
+                        .name(newPartyDto.getName())
                         .build())
-                .users(Set.of(FullPartyDto.User.builder()
+                .users(Set.of(FullPartyDto.ShortUserDto.builder()
                         .id(user.getId())
                         .name(user.getName())
                         .build()))
@@ -70,22 +69,13 @@ public class PartyServiceImpl implements PartyService {
                 .orElseThrow(() -> new EntityNotFoundException("Нет инициатора с таким id")));
         FullPartyDto fullPartyDto = toFullPartyDto(party,
                 new User(userDto.getId(), userDto.getUserName()));
-        Set<FullPartyDto.User> users = fullPartyDto.getUsers();
-        if (party.getItems().size() != 0) {
-            for (FullPartyDto.User user : users) {
-                Set<Item> items = party.getItems().stream().
-                        filter(item -> item.getUser().equals(user.getId()))
-                        .collect(Collectors.toSet());
-                user.setValue(items.size());
-            }
-            fullPartyDto.setUsers(users);
-            Set<FullPartyDto.Item> items = fullPartyDto.getItems();
-            for (FullPartyDto.Item item : items) {
-                item.getUsers().forEach(user -> user.setValue(userRepository
-                        .findAmountOfItemsForUser(item.getId(), user.getId())));
-            }
-            fullPartyDto.setItems(items);
+
+        Set<FullPartyDto.Item> items = fullPartyDto.getItems();
+        for (FullPartyDto.Item item : items) {
+            item.getUsers().forEach(fullUserDto -> fullUserDto.setValue(userRepository
+                    .findAmountOfItemsForUser(item.getId(), fullUserDto.getId())));
         }
+        fullPartyDto.setItems(items);
         return fullPartyDto;
     }
 

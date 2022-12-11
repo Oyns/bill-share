@@ -28,10 +28,10 @@ public class PartyMapper {
     }
 
     public static FullPartyDto toFullPartyDto(Party party, User user) {
-        Set<FullPartyDto.User> users = new HashSet<>();
+        Set<FullPartyDto.ShortUserDto> shortUserDtos = new HashSet<>();
         if (party.getUsers() != null) {
-            users = party.getUsers().stream()
-                    .map(PartyMapper::toUserOfFullPartyDto)
+            shortUserDtos = party.getUsers().stream()
+                    .map(PartyMapper::toShortUserOfFullPartyDto)
                     .collect(Collectors.toSet());
         }
         Set<FullPartyDto.Item> items = new HashSet<>();
@@ -43,9 +43,9 @@ public class PartyMapper {
         return FullPartyDto.builder()
                 .id(party.getId())
                 .name(party.getName())
-                .users(users)
+                .users(shortUserDtos)
                 .items(items)
-                .owner(FullPartyDto.User.builder()
+                .owner(FullPartyDto.ShortUserDto.builder()
                         .id(user.getId())
                         .name(user.getName())
                         .build())
@@ -59,20 +59,34 @@ public class PartyMapper {
                 .isPaid(null)
                 .initiator(fullPartyDto.getOwner().getId())
                 .users(fullPartyDto.getUsers().stream()
-                        .map(PartyMapper::toUserModel)
+                        .map(PartyMapper::toUserModelFromShortUser)
                         .collect(Collectors.toSet()))
                 .build();
     }
 
-    public static User toUserModel(FullPartyDto.User user) {
+    public static User toUserModelFromShortUser(FullPartyDto.ShortUserDto shortUserDto) {
         return User.builder()
+                .id(shortUserDto.getId())
+                .name(shortUserDto.getName())
+                .build();
+    }
+
+    public static User toUserModelFromFullUser(FullPartyDto.FullUserDto fullUserDto) {
+        return User.builder()
+                .id(fullUserDto.getId())
+                .name(fullUserDto.getName())
+                .build();
+    }
+
+    public static FullPartyDto.FullUserDto toFullUserOfFullPartyDto(User user) {
+        return FullPartyDto.FullUserDto.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .build();
     }
 
-    public static FullPartyDto.User toUserOfFullPartyDto(User user) {
-        return FullPartyDto.User.builder()
+    public static FullPartyDto.ShortUserDto toShortUserOfFullPartyDto(User user) {
+        return FullPartyDto.ShortUserDto.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .build();
@@ -87,7 +101,7 @@ public class PartyMapper {
                 .discount(item.getDiscount())
                 .user(item.getUser())
                 .users(item.getUsers().stream()
-                        .map(PartyMapper::toUserModel)
+                        .map(PartyMapper::toUserModelFromFullUser)
                         .collect(Collectors.toSet()))
                 .build();
     }
@@ -101,7 +115,7 @@ public class PartyMapper {
                 .discount(item.getDiscount())
                 .user(item.getUser())
                 .users(item.getUsers().stream()
-                        .map(PartyMapper::toUserOfFullPartyDto)
+                        .map(PartyMapper::toFullUserOfFullPartyDto)
                         .collect(Collectors.toSet()))
                 .build();
     }

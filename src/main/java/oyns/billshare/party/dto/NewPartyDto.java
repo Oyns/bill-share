@@ -16,7 +16,7 @@ import java.util.UUID;
 public class NewPartyDto {
     UUID id;
     @NotBlank
-    String userName;
+    String name;
     @NotBlank
     String partyName;
 }
