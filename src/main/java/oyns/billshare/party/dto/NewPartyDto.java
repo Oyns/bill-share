@@ -2,6 +2,7 @@ package oyns.billshare.party.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.UUID;
 
@@ -9,12 +10,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(of = "id")
 @Builder
-public class PartyDto {
-    private UUID id;
+public class NewPartyDto {
+    UUID id;
     @NotBlank
-    private String name;
-    private Boolean isPaid;
-    private UUID initiator;
+    String userName;
+    @NotBlank
+    String partyName;
 }

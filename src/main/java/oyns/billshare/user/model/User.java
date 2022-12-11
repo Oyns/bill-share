@@ -2,7 +2,7 @@ package oyns.billshare.user.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.UuidGenerator;
+import lombok.experimental.FieldDefaults;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -13,16 +13,18 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
+@ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, unique = true)
-    private UUID id;
+    UUID id;
 
     @Column(name = "user_name", nullable = false)
-    private String name;
+    String name;
 
     @Override
     public boolean equals(Object o) {

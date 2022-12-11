@@ -1,0 +1,27 @@
+version: '3.1'
+services:
+  bill_share:
+    build: /bill-share
+    image: bill_share_image
+    container_name: bill_share_container
+    ports:
+      - "8087:8087"
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_DB=bill_share_db
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/bill_share_db
+
+  db:
+    image: postgres:15
+    container_name: bill_share_db
+    volumes:
+      - /var/lib/postgresql/data/
+    ports:
+      - "6542:5432"
+    environment:
+      - POSTGRES_DB=bill_share_db
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root

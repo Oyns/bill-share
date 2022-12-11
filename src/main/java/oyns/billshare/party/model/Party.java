@@ -2,8 +2,12 @@ package oyns.billshare.party.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
+import oyns.billshare.item.model.Item;
+import oyns.billshare.user.model.User;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -11,22 +15,35 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
+@ToString
 @Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "parties")
 public class Party {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, unique = true)
-    private UUID id;
+    UUID id;
 
-    @Column(name = "party_name", nullable = false, unique = true)
-    private String name;
+    @Column(name = "party_name", unique = true)
+    String name;
 
     @Column(name = "paid")
-    private Boolean isPaid;
+    Boolean isPaid;
 
     @Column(name = "initiator_id", nullable = false, unique = true)
-    private UUID initiator;
+    UUID initiator;
+
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_party", joinColumns = @JoinColumn(name = "party_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    Set<User> users;
+    @ToString.Exclude
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "items_party", joinColumns = @JoinColumn(name = "party_id"),
+    inverseJoinColumns = @JoinColumn(name = "item_id"))
+    Set<Item> items;
 
     @Override
     public boolean equals(Object o) {

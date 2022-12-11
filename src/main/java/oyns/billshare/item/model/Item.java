@@ -2,37 +2,50 @@ package oyns.billshare.item.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
+import oyns.billshare.user.model.User;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Builder
 @Entity
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "items")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, unique = true)
-    private UUID id;
+    UUID id;
 
     @Column(name = "item_name", nullable = false)
-    private String name;
+    String name;
 
-    @Column(name = "price", nullable = false)
-    private Double price;
+    @Column(name = "price")
+    Double price;
 
     @Column(name = "amount")
-    private Integer amount;
+    Integer amount;
 
     @Column(name = "equally")
-    private Boolean isEqually;
+    Boolean isEqually;
 
     @Column(name = "discount")
-    private Double discount;
+    Double discount;
+    @Column(name = "user_id")
+    @JoinTable(name = "users", joinColumns = @JoinColumn(name = "id"))
+    UUID user;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_items", joinColumns = @JoinColumn(name = "item_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @ToString.Exclude
+    Set<User> users;
 
     @Override
     public boolean equals(Object o) {

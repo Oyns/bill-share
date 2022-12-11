@@ -2,6 +2,7 @@ package oyns.billshare.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.UUID;
 
@@ -10,9 +11,11 @@ import java.util.UUID;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class UserDto {
-    private UUID id;
+    UUID id;
+    UUID partyId;
     @NotBlank
-    private String name;
+    String userName;
 }
