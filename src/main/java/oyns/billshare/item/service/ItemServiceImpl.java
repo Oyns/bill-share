@@ -28,6 +28,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto saveItem(ItemDto itemDto, String partyId, String userId) {
         log.info("Save item {}, partyId {}, userId {}", itemDto, partyId, userId);
+        itemDto.setIsEqually(true);
         Party party = partyRepository.findById(UUID.fromString(partyId))
                 .orElseThrow(() -> new EntityNotFoundException("Пати с таким id не существует."));
         Set<Item> items = party.getItems();

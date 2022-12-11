@@ -27,7 +27,7 @@ public class PartyMapper {
                 .build();
     }
 
-    public static FullPartyDto toFullPartyDto(Party party, NewPartyDto newPartyDto) {
+    public static FullPartyDto toFullPartyDto(Party party, User user) {
         Set<FullPartyDto.User> users = new HashSet<>();
         if (party.getUsers() != null) {
             users = party.getUsers().stream()
@@ -43,12 +43,12 @@ public class PartyMapper {
         return FullPartyDto.builder()
                 .id(party.getId())
                 .name(party.getName())
-                .owner(FullPartyDto.User.builder()
-                        .id(newPartyDto.getId())
-                        .name(newPartyDto.getUserName())
-                        .build())
                 .users(users)
                 .items(items)
+                .owner(FullPartyDto.User.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .build())
                 .build();
     }
 
