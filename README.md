@@ -1,7 +1,7 @@
 # bill-share
 App for share a bill
 
-Для подключения к базе данных, в файле application.property поменяйте следующие значения: "bill_share_db" - название базы данных можете установить своё или оставить это spring.datasource.url=jdbc:postgresql://localhost:5432/passwordManager
+Для подключения к базе данных, в файле application.property поменяйте следующие значения: "bill_share_db" - название базы данных можете установить своё или оставить это spring.datasource.url=jdbc:postgresql://localhost:5432/bill_share_db
 
 #Введите свой логин от базы данных spring.datasource.username=root
 
