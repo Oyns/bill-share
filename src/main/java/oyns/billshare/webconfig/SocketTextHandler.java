@@ -30,7 +30,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
         JSONObject jsonObject = new JSONObject(payload);
         if (jsonObject.get("type").equals("add user")) {
             partyService.saveNewUserToParty(UserDto.builder()
-                    .userName(jsonObject.get("userName").toString())
+                    .name(jsonObject.get("userName").toString())
                     .build(), jsonObject.get("partyId").toString());
             session.sendMessage(new TextMessage(packingToJson(message).toString()));
         } else if (jsonObject.get("type").equals("add item")) {

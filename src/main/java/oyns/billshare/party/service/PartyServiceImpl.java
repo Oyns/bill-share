@@ -33,13 +33,13 @@ public class PartyServiceImpl implements PartyService {
     @Override
     public FullPartyDto saveParty(NewPartyDto newPartyDto) {
         User user = userRepository.save(User.builder()
-                .name(newPartyDto.getName())
+                .name(newPartyDto.getUserName())
                 .build());
         FullPartyDto partyDto = FullPartyDto.builder()
                 .name(newPartyDto.getPartyName())
                 .owner(FullPartyDto.ShortUserDto.builder()
                         .id(user.getId())
-                        .name(newPartyDto.getName())
+                        .name(newPartyDto.getUserName())
                         .build())
                 .users(Set.of(FullPartyDto.ShortUserDto.builder()
                         .id(user.getId())
@@ -68,7 +68,7 @@ public class PartyServiceImpl implements PartyService {
         UserDto userDto = toUserDto(userRepository.findById(party.getInitiator())
                 .orElseThrow(() -> new EntityNotFoundException("Нет инициатора с таким id")));
         FullPartyDto fullPartyDto = toFullPartyDto(party,
-                new User(userDto.getId(), userDto.getUserName()));
+                new User(userDto.getId(), userDto.getName()));
 
         Set<FullPartyDto.Item> items = fullPartyDto.getItems();
         for (FullPartyDto.Item item : items) {
