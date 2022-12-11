@@ -18,7 +18,7 @@ public class UserController {
 
     @PostMapping("/user")
     @CrossOrigin(origins = "*")
-    public UserDto saveUser(@RequestBody @Valid NewUserDto newUserDto) {
+    public UserDto addUserToParty(@RequestBody @Valid NewUserDto newUserDto) {
         log.info("Save user={}, partyId={}", newUserDto, newUserDto.getPartyId());
         return userService.saveUser(newUserDto);
     }
