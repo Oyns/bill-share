@@ -9,4 +9,6 @@ App for share a bill
 
 Запустить приложение.
 
+Диаграмма связей базы данных.
+
 ![This is relations diagram](https://github.com/Oyns/bill-share/blob/master/bill%20share%20schema.jpg)
