@@ -71,17 +71,15 @@ public class PartyMapper {
                 .build();
     }
 
-    public static User toUserModelFromFullUser(FullPartyDto.FullUserDto fullUserDto) {
+    public static User toUserModelFromFullUser(FullPartyDto.UserWithItemsValueDto fullUserDto) {
         return User.builder()
                 .id(fullUserDto.getId())
-                .name(fullUserDto.getName())
                 .build();
     }
 
-    public static FullPartyDto.FullUserDto toFullUserOfFullPartyDto(User user) {
-        return FullPartyDto.FullUserDto.builder()
+    public static FullPartyDto.UserWithItemsValueDto toFullUserOfFullPartyDto(User user) {
+        return FullPartyDto.UserWithItemsValueDto.builder()
                 .id(user.getId())
-                .name(user.getName())
                 .build();
     }
 
@@ -97,9 +95,8 @@ public class PartyMapper {
                 .id(item.getId())
                 .name(item.getName())
                 .amount(item.getAmount())
-                .isEqually(item.getIsEqually())
+                .equally(item.getEqually())
                 .discount(item.getDiscount())
-                .user(item.getUser())
                 .users(item.getUsers().stream()
                         .map(PartyMapper::toUserModelFromFullUser)
                         .collect(Collectors.toSet()))
@@ -110,10 +107,10 @@ public class PartyMapper {
         return FullPartyDto.Item.builder()
                 .id(item.getId())
                 .name(item.getName())
-                .amount(item.getAmount())
-                .isEqually(item.getIsEqually())
-                .discount(item.getDiscount())
-                .user(item.getUser())
+                .price(item.getPrice())
+                .amount(1)
+                .equally(true)
+                .discount(0.1)
                 .users(item.getUsers().stream()
                         .map(PartyMapper::toFullUserOfFullPartyDto)
                         .collect(Collectors.toSet()))

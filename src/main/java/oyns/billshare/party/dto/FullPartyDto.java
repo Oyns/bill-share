@@ -15,13 +15,13 @@ import java.util.UUID;
 @EqualsAndHashCode(of = "id")
 @Builder
 public class FullPartyDto {
-    UUID id;
+    ShortUserDto owner;
     @NotBlank
     String name;
-    ShortUserDto owner;
-    Set<ShortUserDto> users;
+    UUID id;
+    String type;
     Set<Item> items;
-    String type; // <---- event type
+    Set<ShortUserDto> users;
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -30,10 +30,8 @@ public class FullPartyDto {
     @FieldDefaults(level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(of = "id")
     @Builder
-    public static class FullUserDto {
+    public static class UserWithItemsValueDto {
         UUID id;
-        @NotBlank
-        String name;
         Integer value;
     }
 
@@ -45,9 +43,9 @@ public class FullPartyDto {
     @EqualsAndHashCode(of = "id")
     @Builder
     public static class ShortUserDto {
-        UUID id;
         @NotBlank
         String name;
+        UUID id;
     }
 
     @AllArgsConstructor
@@ -58,14 +56,13 @@ public class FullPartyDto {
     @EqualsAndHashCode(of = "id")
     @Builder
     public static class Item {
-        UUID id;
         @NotBlank
         String name;
+        UUID id;
         Double price;
         Integer amount;
-        Boolean isEqually;
+        Boolean equally;
         Double discount;
-        UUID user;
-        Set<FullUserDto> users;
+        Set<UserWithItemsValueDto> users;
     }
 }

@@ -20,7 +20,7 @@ public class ItemDto {
     String name;
     Double price;
     Integer amount;
-    Boolean isEqually;
+    Boolean equally;
     Double discount;
 
     UUID user;

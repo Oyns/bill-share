@@ -34,7 +34,7 @@ public class Item {
     Integer amount;
 
     @Column(name = "equally")
-    Boolean isEqually;
+    Boolean equally;
 
     @Column(name = "discount")
     Double discount;
