@@ -22,7 +22,6 @@ public class ItemDto {
     Integer amount;
     Boolean equally;
     Double discount;
-
     UUID user;
     Set<User> users;
 

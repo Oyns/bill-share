@@ -28,26 +28,34 @@ public class SocketTextHandler extends TextWebSocketHandler {
 
         String payload = message.getPayload();
         JSONObject jsonObject = new JSONObject(payload);
-        if (jsonObject.get("type").equals("add user")) {
-            partyService.saveNewUserToParty(UserDto.builder()
-                    .name(jsonObject.get("userName").toString())
-                    .build(), jsonObject.get("partyId").toString());
-            session.sendMessage(new TextMessage(packingToJson(message).toString()));
-        } else if (jsonObject.get("type").equals("add item")) {
-            itemService.saveItem(ItemDto.builder()
-                    .name(jsonObject.get("itemName").toString())
-                    .price(Double.valueOf(jsonObject.get("itemPrice").toString()))
-                    .user(UUID.fromString(jsonObject.get("userId").toString()))
-                    .build(), jsonObject.get("partyId").toString(), jsonObject.get("userId").toString());
-            session.sendMessage(new TextMessage(packingToJson(message).toString()));
-        } else if (jsonObject.get("type").equals("remove user")) {
-            partyService.deleteUserFromParty(jsonObject.get("userId").toString(),
-                    jsonObject.get("partyId").toString());
-            session.sendMessage(new TextMessage(packingToJson(message).toString()));
-        } else if (jsonObject.get("type").equals("remove item")) {
-            partyService.deleteItemFromParty(jsonObject.get("itemId").toString(),
-                    jsonObject.get("partyId").toString());
-            session.sendMessage(new TextMessage(packingToJson(message).toString()));
+        switch (jsonObject.get("type").toString()) {
+            case "add user" -> {
+                partyService.saveNewUserToParty(UserDto.builder()
+                        .name(jsonObject.get("userName").toString())
+                        .build(), jsonObject.get("partyId").toString());
+                session.sendMessage(new TextMessage(packingToJson(message).toString()));
+            }
+            case "add item" -> {
+                itemService.saveItem(ItemDto.builder()
+                        .name(jsonObject.get("itemName").toString())
+                        .price(Double.valueOf(jsonObject.get("itemPrice").toString()))
+                        .user(UUID.fromString(jsonObject.get("userId").toString()))
+                        .build(), jsonObject.get("partyId").toString(), jsonObject.get("userId").toString());
+                session.sendMessage(new TextMessage(packingToJson(message).toString()));
+            }
+            case "remove user" -> {
+                            partyService.deleteUserFromParty(jsonObject.get("userId").toString(),
+                                    jsonObject.get("partyId").toString());
+                session.sendMessage(new TextMessage(packingToJson(message).toString()));
+            }
+            case "remove item" -> {
+                            partyService.deleteItemFromParty(jsonObject.get("itemId").toString(),
+                                    jsonObject.get("partyId").toString());
+                session.sendMessage(new TextMessage(packingToJson(message).toString()));
+            }
+            case "update item" -> {
+                session.sendMessage(new TextMessage("ТУТ МОГЛА БЫТЬ ВАША РЕКЛАМА"));
+            }
         }
     }
 
