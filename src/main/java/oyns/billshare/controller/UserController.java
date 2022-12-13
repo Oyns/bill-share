@@ -1,14 +1,15 @@
 package oyns.billshare.controller;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import oyns.billshare.user.dto.NewUserDto;
 import oyns.billshare.user.dto.UserDto;
 import oyns.billshare.user.service.UserServiceImpl;
 
 @RestController
-@Slf4j
 public class UserController {
     private final UserServiceImpl userService;
 
@@ -19,7 +20,6 @@ public class UserController {
     @PostMapping("/user")
     @CrossOrigin(origins = "*")
     public UserDto addUserToParty(@RequestBody @Valid NewUserDto newUserDto) {
-        log.info("Save user={}, partyId={}", newUserDto, newUserDto.getPartyId());
         return userService.saveUser(newUserDto);
     }
 }
