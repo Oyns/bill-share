@@ -11,9 +11,9 @@ App for share a bill
 
 #Введите свой пароль от базы данных spring.datasource.password=root
 
-Запустить приложение
+Запустите приложение
 
-Для запуска приложения в Docker - убедитесь в корректности пути к папке с приложением в файле docker-compose.yml и введите в терминале команду docker-compose up
+Для запуска приложения в Docker - запустите mvn clean:clean package, убедитесь в корректности пути к папке с приложением в файле docker-compose.yml и введите в терминале команду docker-compose up
 
 ![This is path to directory with app](https://github.com/Oyns/bill-share/blob/master/docker%20instruction.png)
 
