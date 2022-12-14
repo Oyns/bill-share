@@ -54,7 +54,12 @@ public class ItemServiceImpl implements ItemService {
 
     private void setItemParameters(ItemDto itemDto, Item item) {
         Optional.ofNullable(itemDto.getPrice()).ifPresent(item::setPrice);
-        Optional.ofNullable(itemDto.getAmount()).ifPresent(item::setAmount);
+        if (itemDto.getAmount() == null) {
+            item.setAmount(1);
+        }
+        if (itemDto.getDiscount() == null) {
+            item.setDiscount(0.0);
+        }
         Optional.ofNullable(itemDto.getDiscount()).ifPresent(item::setDiscount);
     }
 }
