@@ -16,9 +16,7 @@ import oyns.billshare.user.dto.UserDto;
 import oyns.billshare.user.model.User;
 import oyns.billshare.user.repository.UserRepository;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static oyns.billshare.party.mapper.PartyMapper.*;
@@ -79,7 +77,9 @@ public class PartyServiceImpl implements PartyService {
             item.getUsers().forEach(fullUserDto -> fullUserDto.setValue(userRepository
                     .findAmountOfItemsForUser(item.getId(), fullUserDto.getId())));
         }
-        fullPartyDto.setItems(items);
+        fullPartyDto.setItems(items.stream()
+                .sorted(Comparator.comparing(FullPartyDto.Item::getCreatedOn))
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
         return fullPartyDto;
     }
 

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -63,6 +64,7 @@ public class FullPartyDto {
         Integer amount;
         Boolean equally;
         Double discount;
+        LocalDateTime createdOn;
         Set<UserWithItemsValueDto> users;
     }
 }

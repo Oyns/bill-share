@@ -26,6 +26,7 @@ public class ItemMapper {
                 .equally(itemDto.getEqually())
                 .discount(itemDto.getDiscount())
                 .user(itemDto.getUser())
+                .createdOn(itemDto.getCreatedOn())
                 .users(users)
                 .build();
     }
@@ -39,6 +40,7 @@ public class ItemMapper {
                 .equally(item.getEqually())
                 .discount(item.getDiscount())
                 .user(item.getUser())
+                .createdOn(item.getCreatedOn())
                 .build();
     }
 

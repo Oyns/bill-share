@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,6 +24,7 @@ public class ItemDto {
     Boolean equally;
     Double discount;
     UUID user;
+    LocalDateTime createdOn;
     Set<User> users;
 
     @AllArgsConstructor

@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import oyns.billshare.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -41,6 +42,8 @@ public class Item {
     @Column(name = "user_id")
     @JoinTable(name = "users", joinColumns = @JoinColumn(name = "id"))
     UUID user;
+    @Column(name = "created_on", columnDefinition = "TIMESTAMP")
+    LocalDateTime createdOn;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_items", joinColumns = @JoinColumn(name = "item_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))

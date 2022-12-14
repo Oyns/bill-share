@@ -13,6 +13,7 @@ import oyns.billshare.party.repository.PartyRepository;
 import oyns.billshare.user.model.User;
 import oyns.billshare.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +32,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto saveItem(ItemDto itemDto, String partyId, String userId) {
         log.info("Save item {}, partyId {}, userId {}", itemDto, partyId, userId);
-        itemDto.setEqually(true);
         User user = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new EntityNotFoundException("Нет пользователя с таким id."));
         Party party = partyRepository.findById(UUID.fromString(partyId))
@@ -50,6 +50,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void setItemParameters(ItemDto itemDto) {
+        itemDto.setCreatedOn(LocalDateTime.now());
         itemDto.setEqually(true);
         if (itemDto.getPrice() == null) {
             itemDto.setPrice(0.0);

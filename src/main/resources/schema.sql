@@ -19,13 +19,14 @@ CREATE UNIQUE INDEX IF NOT EXISTS users_index ON users (id);
 
 CREATE TABLE IF NOT EXISTS items
 (
-    id        uuid,
-    item_name VARCHAR(255) NOT NULL,
-    price     DECIMAL,
-    amount    INTEGER,
-    equally   BOOLEAN,
-    discount  DECIMAL,
-    user_id   uuid,
+    id         uuid,
+    item_name  VARCHAR(255) NOT NULL,
+    price      DECIMAL,
+    amount     INTEGER,
+    equally    BOOLEAN,
+    discount   DECIMAL,
+    user_id    uuid,
+    created_on TIMESTAMP WITHOUT TIME ZONE,
     CONSTRAINT pk_items PRIMARY KEY (id)
 );
 
