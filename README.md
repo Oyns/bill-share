@@ -1,5 +1,5 @@
 # bill-share
-App for share a bill
+Приложение для разделения счета.
 
 Версия Java - 17
 
