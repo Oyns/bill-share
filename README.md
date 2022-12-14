@@ -2,6 +2,7 @@
 App for share a bill
 
 Версия Java - 17
+
 Версия Postgres - 15
 
 Для подключения к базе данных, в файле application.property поменяйте следующие значения: "bill_share_db" - название базы данных можете установить своё или оставить это spring.datasource.url=jdbc:postgresql://localhost:5432/bill_share_db
