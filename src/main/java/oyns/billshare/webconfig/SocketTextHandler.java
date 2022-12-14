@@ -38,7 +38,8 @@ public class SocketTextHandler extends TextWebSocketHandler {
             case "add item" -> {
                 itemService.saveItem(ItemDto.builder()
                         .name(jsonObject.get("itemName").toString())
-                        .price(Double.valueOf(jsonObject.get("itemPrice").toString()))
+                        .price(jsonObject.getDouble("itemPrice"))
+                        .amount(jsonObject.getInt("amount"))
                         .user(UUID.fromString(jsonObject.get("userId").toString()))
                         .build(), jsonObject.get("partyId").toString(), jsonObject.get("userId").toString());
                 session.sendMessage(new TextMessage(packingToJson(message).toString()));

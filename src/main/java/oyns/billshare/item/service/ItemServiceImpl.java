@@ -13,7 +13,6 @@ import oyns.billshare.party.repository.PartyRepository;
 import oyns.billshare.user.model.User;
 import oyns.billshare.user.repository.UserRepository;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,10 +40,8 @@ public class ItemServiceImpl implements ItemService {
                 .id(user.getId())
                 .name(user.getName())
                 .build()));
-        itemDto.setEqually(true);
-        Item item = toItem(itemDto);
-        setItemParameters(itemDto, item);
-        itemRepository.save(item);
+        setItemParameters(itemDto);
+        Item item = itemRepository.save(toItem(itemDto));
         Set<Item> items = party.getItems();
         items.add(item);
         party.setItems(items);
@@ -52,14 +49,16 @@ public class ItemServiceImpl implements ItemService {
         return toItemDto(item);
     }
 
-    private void setItemParameters(ItemDto itemDto, Item item) {
-        Optional.ofNullable(itemDto.getPrice()).ifPresent(item::setPrice);
+    private void setItemParameters(ItemDto itemDto) {
+        itemDto.setEqually(true);
+        if (itemDto.getPrice() == null) {
+            itemDto.setPrice(0.0);
+        }
         if (itemDto.getAmount() == null) {
-            item.setAmount(1);
+            itemDto.setAmount(1);
         }
         if (itemDto.getDiscount() == null) {
-            item.setDiscount(0.0);
+            itemDto.setDiscount(0.0);
         }
-        Optional.ofNullable(itemDto.getDiscount()).ifPresent(item::setDiscount);
     }
 }
