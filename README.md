@@ -13,6 +13,7 @@ App for share a bill
 Запустить приложение
 
 Для запуска приложения в Docker - убедитесь в корректности пути к папке с приложением в файле docker-compose.yml и введите в терминале команду docker-compose up
+
 ![This is path to directory with app](https://github.com/Oyns/bill-share/blob/master/docker%20instruction.png)
 
 Диаграмма связей базы данных.
