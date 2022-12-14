@@ -21,5 +21,6 @@ public interface PartyService {
     FullPartyDto removeUserFromItem(String userId, String partyId, String itemId);
 
     FullPartyDto updateItemInParty(String userId, String partyId, String itemId,
-                                   Double price, Integer amount, Double discount);
+                                   Double price, Integer amount, Double discount,
+                                   String name, Boolean equally);
 }

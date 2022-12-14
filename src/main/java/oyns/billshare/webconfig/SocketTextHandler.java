@@ -71,6 +71,8 @@ public class SocketTextHandler extends TextWebSocketHandler {
                             jsonObject.get("id").toString(),
                             jsonObject.getDouble("price"),
                             null,
+                            null,
+                            null,
                             null);
                 } else if (jsonObject.has("amount")) {
                     partyService.updateItemInParty(jsonObject.get("userId").toString(),
@@ -78,6 +80,8 @@ public class SocketTextHandler extends TextWebSocketHandler {
                             jsonObject.get("id").toString(),
                             null,
                             jsonObject.getInt("amount"),
+                            null,
+                            null,
                             null);
                 } else if (jsonObject.has("discount")) {
                     partyService.updateItemInParty(jsonObject.get("userId").toString(),
@@ -85,7 +89,27 @@ public class SocketTextHandler extends TextWebSocketHandler {
                             jsonObject.get("id").toString(),
                             null,
                             null,
-                            jsonObject.getDouble("discount"));
+                            jsonObject.getDouble("discount"),
+                            null,
+                            null);
+                } else if (jsonObject.has("name")) {
+                    partyService.updateItemInParty(jsonObject.get("userId").toString(),
+                            jsonObject.get("partyId").toString(),
+                            jsonObject.get("id").toString(),
+                            null,
+                            null,
+                            null,
+                            jsonObject.getString("name"),
+                            null);
+                } else if (jsonObject.has("equally")) {
+                    partyService.updateItemInParty(jsonObject.get("userId").toString(),
+                            jsonObject.get("partyId").toString(),
+                            jsonObject.get("id").toString(),
+                            null,
+                            null,
+                            null,
+                            null,
+                            jsonObject.getBoolean("equally"));
                 }
                 session.sendMessage(new TextMessage(packingToJson(message).toString()));
             }

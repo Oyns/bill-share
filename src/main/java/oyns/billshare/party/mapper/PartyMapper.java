@@ -109,7 +109,7 @@ public class PartyMapper {
                 .name(item.getName())
                 .price(item.getPrice())
                 .amount(item.getAmount())
-                .equally(true)
+                .equally(item.getEqually())
                 .discount(item.getDiscount())
                 .users(item.getUsers().stream()
                         .map(PartyMapper::toFullUserOfFullPartyDto)

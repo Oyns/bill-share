@@ -143,16 +143,15 @@ public class PartyServiceImpl implements PartyService {
 
     @Override
     public FullPartyDto updateItemInParty(String userId, String partyId, String itemId,
-                                          Double price, Integer amount, Double discount) {
+                                          Double price, Integer amount, Double discount,
+                                          String name, Boolean equally) {
         Party party = partyRepository.findById(UUID.fromString(partyId))
                 .orElseThrow(() -> new EntityNotFoundException("Нет пати с таким id"));
         Item item = itemRepository.findById(UUID.fromString(itemId))
                 .orElseThrow(() -> new EntityNotFoundException("Нет вещи с таким id."));
         User owner = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new EntityNotFoundException("Нет инициатора с таким id"));
-        Optional.ofNullable(price).ifPresent(item::setPrice);
-        Optional.ofNullable(amount).ifPresent(item::setAmount);
-        Optional.ofNullable(discount).ifPresent(item::setDiscount);
+        updateItemFieldsIfPresent(price, amount, discount, name, equally, item);
         itemRepository.save(item);
         Set<Item> items = party.getItems();
         items.removeIf(item1 -> item1.getId().equals(UUID.fromString(itemId)));
@@ -182,5 +181,14 @@ public class PartyServiceImpl implements PartyService {
                         .map(PartyMapper::toShortUserOfFullPartyDto)
                         .collect(Collectors.toSet()))
                 .build();
+    }
+
+    private void updateItemFieldsIfPresent(Double price, Integer amount, Double discount,
+                                           String name, Boolean equally, Item item) {
+        Optional.ofNullable(price).ifPresent(item::setPrice);
+        Optional.ofNullable(amount).ifPresent(item::setAmount);
+        Optional.ofNullable(discount).ifPresent(item::setDiscount);
+        Optional.ofNullable(name).ifPresent(item::setName);
+        Optional.ofNullable(equally).ifPresent(item::setEqually);
     }
 }
