@@ -41,11 +41,20 @@ public class ItemServiceImpl implements ItemService {
                 .id(user.getId())
                 .name(user.getName())
                 .build()));
-        Item item = itemRepository.save(toItem(itemDto));
+        itemDto.setEqually(true);
+        Item item = toItem(itemDto);
+        setItemParameters(itemDto, item);
+        itemRepository.save(item);
         Set<Item> items = party.getItems();
         items.add(item);
         party.setItems(items);
         partyRepository.save(party);
         return toItemDto(item);
+    }
+
+    private void setItemParameters(ItemDto itemDto, Item item) {
+        Optional.ofNullable(itemDto.getPrice()).ifPresent(item::setPrice);
+        Optional.ofNullable(itemDto.getAmount()).ifPresent(item::setAmount);
+        Optional.ofNullable(itemDto.getDiscount()).ifPresent(item::setDiscount);
     }
 }
