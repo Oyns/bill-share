@@ -15,7 +15,7 @@
 
 Для запуска приложения в Docker - запустите mvn clean:clean package, убедитесь в корректности пути к папке с приложением в файле docker-compose.yml и введите в терминале команду docker-compose up
 
-![This is path to directory with app](https://github.com/Oyns/bill-share/blob/master/docker%20instruction.png)
+![This is path to directory with app](https://github.com/Oyns/bill-share/blob/develop/docker%20connect%20description.png)
 
 Диаграмма связей базы данных.
 
