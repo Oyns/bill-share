@@ -16,7 +16,7 @@ import oyns.billshare.user.dto.UserDto;
 import java.io.IOException;
 import java.util.UUID;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class SocketTextHandler extends TextWebSocketHandler {
     private final PartyServiceImpl partyService;
@@ -25,7 +25,6 @@ public class SocketTextHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(@NonNull WebSocketSession session, TextMessage message)
             throws IOException {
-
         String payload = message.getPayload();
         JSONObject jsonObject = new JSONObject(payload);
         switch (jsonObject.get("type").toString()) {

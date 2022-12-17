@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import oyns.billshare.party.dto.FullPartyDto;
 import oyns.billshare.party.dto.NewPartyDto;
 import oyns.billshare.party.service.PartyServiceImpl;
+import oyns.billshare.webconfig.BinaryEventLauncher;
+
+import java.net.URISyntaxException;
 
 @RestController
 @AllArgsConstructor
@@ -13,6 +16,7 @@ import oyns.billshare.party.service.PartyServiceImpl;
 public class PartyController {
 
     private final PartyServiceImpl partyService;
+    private final BinaryEventLauncher binaryEventLauncher;
 
     @PostMapping(value = "/party")
     @CrossOrigin(origins = "*")
@@ -24,5 +28,11 @@ public class PartyController {
     @CrossOrigin(origins = "*")
     public FullPartyDto getPartyById(@PathVariable(value = "id") String partyId) {
         return partyService.getPartyById(partyId);
+    }
+
+    @GetMapping("/socket.io/")
+    @CrossOrigin(origins = "*")
+    public void test() throws URISyntaxException {
+        binaryEventLauncher.setupSocket();
     }
 }

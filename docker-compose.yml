@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   bill_share:
-    build: /bill-share
+    build: ./
     image: bill_share_image
     container_name: bill_share_container
     ports:
