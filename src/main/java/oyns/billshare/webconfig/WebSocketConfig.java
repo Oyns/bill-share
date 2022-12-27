@@ -19,6 +19,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry
                 .addHandler(new SocketTextHandler(partyService, itemService), "/ws")
-                .setAllowedOriginPatterns("*");
+                .setAllowedOrigins("*");
     }
 }

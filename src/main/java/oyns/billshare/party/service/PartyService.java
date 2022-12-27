@@ -8,11 +8,19 @@ public interface PartyService {
 
     FullPartyDto saveParty(NewPartyDto newPartyDto);
 
-    void saveNewUserToParty(UserDto userDto, String partyId);
+    void addUserToParty(UserDto userDto, String partyId);
 
     FullPartyDto getPartyById(String partyId);
 
-    void deleteUserFromParty(String userId, String partyId);
+    void removeUserFromParty(String userId, String partyId);
 
-    void deleteItemFromParty(String itemId, String partyId);
+    void removeItemFromParty(String itemId, String partyId);
+
+    FullPartyDto addUserToItem(String userId, String partyId, String itemId, Integer value);
+
+    FullPartyDto removeUserFromItem(String userId, String partyId, String itemId);
+
+    FullPartyDto updateItemInParty(String userId, String partyId, String itemId,
+                                   Double price, Integer amount, Double discount,
+                                   String name, Boolean equally);
 }

@@ -1,6 +1,7 @@
 package oyns.billshare.user.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import oyns.billshare.exception.EntityNotFoundException;
 import oyns.billshare.party.model.Party;
@@ -16,12 +17,14 @@ import static oyns.billshare.user.mapper.UserMapper.*;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PartyRepository partyRepository;
 
     @Override
     public UserDto saveUser(NewUserDto newUserDto) {
+        log.info("Save user {}", newUserDto);
         Party party = partyRepository.findById(newUserDto.getPartyId())
                 .orElseThrow(() -> new EntityNotFoundException("Нет пати с таким id"));
         Set<User> users = party.getUsers();

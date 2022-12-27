@@ -1,5 +1,6 @@
 package oyns.billshare.user.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,5 +16,6 @@ import java.util.UUID;
 public class NewUserDto {
     UUID id;
     UUID partyId;
+    @NotBlank
     String userName;
 }
