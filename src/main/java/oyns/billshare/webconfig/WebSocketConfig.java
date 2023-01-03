@@ -126,7 +126,9 @@ public class WebSocketConfig implements WebSocketConfigurer, UserService {
                 FullPartyDto fullPartyDto = partyService.getPartyById(jsonObject.get("partyId").toString());
                 fullPartyDto.setType(jsonObject.get("type").toString());
                 for (WebSocketSession webSocketSession : sessions) {
-                    webSocketSession.sendMessage(new TextMessage(new JSONObject(fullPartyDto).toString()));
+                    if (webSocketSession.isOpen()) {
+                        webSocketSession.sendMessage(new TextMessage(new JSONObject(fullPartyDto).toString()));
+                    }
                 }
             }
 
@@ -262,7 +264,9 @@ public class WebSocketConfig implements WebSocketConfigurer, UserService {
         fullPartyDto.setType("add user");
         JSONObject jsonObject = new JSONObject(fullPartyDto);
         for (WebSocketSession webSocketSession : sessions) {
-            webSocketSession.sendMessage(new TextMessage(jsonObject.toString()));
+            if (webSocketSession.isOpen()) {
+                webSocketSession.sendMessage(new TextMessage(jsonObject.toString()));
+            }
         }
         return toUserDto(user);
     }
