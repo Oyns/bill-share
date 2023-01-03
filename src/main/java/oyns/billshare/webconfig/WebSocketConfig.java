@@ -2,11 +2,13 @@ package oyns.billshare.webconfig;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
@@ -15,23 +17,37 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+import oyns.billshare.exception.EntityNotFoundException;
 import oyns.billshare.item.dto.ItemDto;
 import oyns.billshare.item.service.ItemServiceImpl;
 import oyns.billshare.party.dto.FullPartyDto;
+import oyns.billshare.party.model.Party;
+import oyns.billshare.party.repository.PartyRepository;
 import oyns.billshare.party.service.PartyServiceImpl;
+import oyns.billshare.user.dto.NewUserDto;
 import oyns.billshare.user.dto.UserDto;
+import oyns.billshare.user.model.User;
+import oyns.billshare.user.repository.UserRepository;
+import oyns.billshare.user.service.UserService;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import static oyns.billshare.user.mapper.UserMapper.toUserDto;
+import static oyns.billshare.user.mapper.UserMapper.toUserFromNew;
 
 @Configuration
 @EnableWebSocket
 @RequiredArgsConstructor
-public class WebSocketConfig implements WebSocketConfigurer {
+@Slf4j
+public class WebSocketConfig implements WebSocketConfigurer, UserService {
     private final PartyServiceImpl partyService;
     private final ItemServiceImpl itemService;
+    private final UserRepository userRepository;
+    private final PartyRepository partyRepository;
+
+    private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
@@ -40,6 +56,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 .addInterceptors(partyInterceptor())
                 .setAllowedOrigins("*");
     }
+
 
     @Bean
     public HandshakeInterceptor partyInterceptor() {
@@ -64,12 +81,28 @@ public class WebSocketConfig implements WebSocketConfigurer {
         };
     }
 
+
     @Bean
     public WebSocketHandler partyHandler() {
+
         return new TextWebSocketHandler() {
+
+            @Override
+            public void afterConnectionEstablished(@NonNull WebSocketSession session) {
+                log.info("Connected " + session.getUri());
+                sessions.add(session);
+            }
+
+            @Override
+            public void afterConnectionClosed(@NonNull WebSocketSession session,
+                                              @NonNull CloseStatus status) {
+                log.info(String.format("Session %s closed because of %s", session.getId(), status.getReason()));
+            }
+
             public void handleTextMessage(@NonNull WebSocketSession session,
                                           @NonNull TextMessage message)
                     throws IOException {
+                log.info("message received: " + message.getPayload());
                 String partyId = session.getAttributes().get("partyId").toString();
                 if (Objects.requireNonNull(session.getUri()).toString().contains(partyId)) {
                     String payload = message.getPayload();
@@ -86,7 +119,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 }
             }
 
-            private JSONObject packingToJson(TextMessage message) {
+
+            public JSONObject packingToJson(TextMessage message) {
                 String payload = message.getPayload();
                 JSONObject jsonObject = new JSONObject(payload);
                 FullPartyDto fullPartyDto = partyService.getPartyById(jsonObject.get("partyId").toString());
@@ -94,7 +128,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 return new JSONObject(fullPartyDto);
             }
 
-            private void addUser(JSONObject jsonObject, WebSocketSession session, TextMessage message) throws IOException {
+            private void addUser(JSONObject jsonObject,
+                                 WebSocketSession session,
+                                 TextMessage message) throws IOException {
                 partyService.addUserToParty(UserDto.builder()
                         .name(jsonObject.get("userName").toString())
                         .build(), jsonObject.get("partyId").toString());
@@ -212,5 +248,24 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 session.sendMessage(new TextMessage(packingToJson(message).toString()));
             }
         };
+    }
+
+    @Override
+    public UserDto saveUser(NewUserDto newUserDto) throws IOException {
+        log.info("Save user {}", newUserDto);
+        Party party = partyRepository.findById(newUserDto.getPartyId())
+                .orElseThrow(() -> new EntityNotFoundException("Нет пати с таким id"));
+        Set<User> users = party.getUsers();
+        User user = userRepository.save(toUserFromNew(newUserDto));
+        users.add(user);
+        party.setUsers(users);
+        partyRepository.save(party);
+        FullPartyDto fullPartyDto = partyService.getPartyById(party.getId().toString());
+        fullPartyDto.setType("add user");
+        JSONObject jsonObject = new JSONObject(fullPartyDto);
+        for (WebSocketSession webSocketSession : sessions) {
+            webSocketSession.sendMessage(new TextMessage(jsonObject.toString()));
+        }
+        return toUserDto(user);
     }
 }

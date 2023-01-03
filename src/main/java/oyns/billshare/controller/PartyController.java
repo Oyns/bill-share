@@ -15,13 +15,11 @@ public class PartyController {
     private final PartyServiceImpl partyService;
 
     @PostMapping(value = "/party")
-    @CrossOrigin(origins = "*")
     public FullPartyDto saveParty(@RequestBody @Valid NewPartyDto partyDto) {
         return partyService.saveParty(partyDto);
     }
 
     @GetMapping("/party/{id}")
-    @CrossOrigin(origins = "*")
     public FullPartyDto getPartyById(@PathVariable(value = "id") String partyId) {
         return partyService.getPartyById(partyId);
     }

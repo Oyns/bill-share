@@ -17,4 +17,5 @@ public class UserDto {
     UUID id;
     @NotBlank
     String name;
+    String partyId;
 }
