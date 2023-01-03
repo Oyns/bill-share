@@ -108,72 +108,71 @@ public class WebSocketConfig implements WebSocketConfigurer, UserService {
                     String payload = message.getPayload();
                     JSONObject jsonObject = new JSONObject(payload);
                     switch (jsonObject.get("type").toString()) {
-                        case "add user" -> addUser(jsonObject, session, message);
-                        case "add item" -> addItem(jsonObject, session, message);
-                        case "remove user" -> removeUser(jsonObject, session, message);
-                        case "remove item" -> removeItem(jsonObject, session, message);
-                        case "add user to item" -> addUserToItem(jsonObject, session, message);
-                        case "remove user from item" -> removeUserFromItem(jsonObject, session, message);
-                        case "update item" -> validateItemUpdate(jsonObject, session, message);
+                        case "add user" -> addUser(jsonObject, message);
+                        case "add item" -> addItem(jsonObject, message);
+                        case "remove user" -> removeUser(jsonObject, message);
+                        case "remove item" -> removeItem(jsonObject, message);
+                        case "add user to item" -> addUserToItem(jsonObject, message);
+                        case "remove user from item" -> removeUserFromItem(jsonObject, message);
+                        case "update item" -> validateItemUpdate(jsonObject, message);
                     }
                 }
             }
 
 
-            public JSONObject packingToJson(TextMessage message) {
+            public void packingToJson(TextMessage message) throws IOException {
                 String payload = message.getPayload();
                 JSONObject jsonObject = new JSONObject(payload);
                 FullPartyDto fullPartyDto = partyService.getPartyById(jsonObject.get("partyId").toString());
                 fullPartyDto.setType(jsonObject.get("type").toString());
-                return new JSONObject(fullPartyDto);
+                for (WebSocketSession webSocketSession : sessions) {
+                    webSocketSession.sendMessage(new TextMessage(new JSONObject(fullPartyDto).toString()));
+                }
             }
 
             private void addUser(JSONObject jsonObject,
-                                 WebSocketSession session,
                                  TextMessage message) throws IOException {
                 partyService.addUserToParty(UserDto.builder()
                         .name(jsonObject.get("userName").toString())
                         .build(), jsonObject.get("partyId").toString());
-                session.sendMessage(new TextMessage(packingToJson(message).toString()));
+                packingToJson(message);
             }
 
-            private void addItem(JSONObject jsonObject, WebSocketSession session, TextMessage message) throws IOException {
+            private void addItem(JSONObject jsonObject, TextMessage message) throws IOException {
                 itemService.saveItem(ItemDto.builder()
                         .name(jsonObject.get("itemName").toString())
                         .price(jsonObject.getDouble("itemPrice"))
                         .amount(jsonObject.getInt("amount"))
                         .user(UUID.fromString(jsonObject.get("userId").toString()))
                         .build(), jsonObject.get("partyId").toString(), jsonObject.get("userId").toString());
-                session.sendMessage(new TextMessage(packingToJson(message).toString()));
+                packingToJson(message);
             }
 
-            private void removeUser(JSONObject jsonObject, WebSocketSession session, TextMessage message) throws IOException {
+            private void removeUser(JSONObject jsonObject, TextMessage message) throws IOException {
                 partyService.removeUserFromParty(jsonObject.get("userId").toString(),
                         jsonObject.get("partyId").toString());
-                session.sendMessage(new TextMessage(packingToJson(message).toString()));
+                packingToJson(message);
             }
 
-            private void removeItem(JSONObject jsonObject, WebSocketSession session, TextMessage message) throws IOException {
+            private void removeItem(JSONObject jsonObject, TextMessage message) throws IOException {
                 partyService.removeItemFromParty(jsonObject.get("itemId").toString(),
                         jsonObject.get("partyId").toString());
-                session.sendMessage(new TextMessage(packingToJson(message).toString()));
+                packingToJson(message);
             }
 
             private void addUserToItem(JSONObject jsonObject,
-                                       WebSocketSession session,
                                        TextMessage message) throws IOException {
                 partyService.addUserToItem(jsonObject.get("userId").toString(), jsonObject.get("partyId").toString(),
                         jsonObject.get("itemId").toString(), jsonObject.getInt("value"));
-                session.sendMessage(new TextMessage(packingToJson(message).toString()));
+                packingToJson(message);
             }
 
             private void removeUserFromItem(JSONObject jsonObject,
-                                            WebSocketSession session,
                                             TextMessage message) throws IOException {
                 partyService.removeUserFromItem(jsonObject.get("userId").toString(),
                         jsonObject.get("partyId").toString(),
                         jsonObject.get("itemId").toString());
-                session.sendMessage(new TextMessage(packingToJson(message).toString()));
+                packingToJson(message);
             }
 
             private void updateItemPrice(JSONObject jsonObject) {
@@ -232,7 +231,6 @@ public class WebSocketConfig implements WebSocketConfigurer, UserService {
             }
 
             private void validateItemUpdate(JSONObject jsonObject,
-                                            WebSocketSession session,
                                             TextMessage message) throws IOException {
                 if (jsonObject.has("price")) {
                     updateItemPrice(jsonObject);
@@ -245,7 +243,7 @@ public class WebSocketConfig implements WebSocketConfigurer, UserService {
                 } else if (jsonObject.has("equally")) {
                     updateItemEqually(jsonObject);
                 }
-                session.sendMessage(new TextMessage(packingToJson(message).toString()));
+                packingToJson(message);
             }
         };
     }
