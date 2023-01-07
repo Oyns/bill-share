@@ -67,6 +67,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
                                            @NonNull Map<String, Object> attributes) {
                 String path = request.getURI().getPath();
                 String partyId = path.substring(path.lastIndexOf('/') + 1);
+                System.out.println(partyId);
                 attributes.put("partyId", partyId);
                 return true;
             }
@@ -125,7 +126,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 FullPartyDto fullPartyDto = partyService.getPartyById(jsonObject.get("partyId").toString());
                 fullPartyDto.setType(jsonObject.get("type").toString());
                 for (WebSocketSession webSocketSession : sessions) {
-                    if (webSocketSession.isOpen()) {
+                        String path = Objects.requireNonNull(webSocketSession.getUri()).getPath();
+                        String partyId = path.substring(path.lastIndexOf('/') + 1);
+                    if (webSocketSession.isOpen() && partyId.equals(fullPartyDto.getId().toString())) {
                         webSocketSession.sendMessage(new TextMessage(new JSONObject(fullPartyDto).toString()));
                     }
                 }
@@ -262,7 +265,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
         fullPartyDto.setType("add user");
         JSONObject jsonObject = new JSONObject(fullPartyDto);
         for (WebSocketSession webSocketSession : sessions) {
-            if (webSocketSession.isOpen()) {
+            String path = Objects.requireNonNull(webSocketSession.getUri()).getPath();
+            String partyId = path.substring(path.lastIndexOf('/') + 1);
+            if (webSocketSession.isOpen() && partyId.equals(fullPartyDto.getId().toString())) {
                 webSocketSession.sendMessage(new TextMessage(jsonObject.toString()));
             }
         }
