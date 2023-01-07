@@ -156,6 +156,7 @@ public class PartyServiceImpl implements PartyService {
         User owner = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new EntityNotFoundException("No party initiator with this id."));
         updateItemFieldsIfPresent(price, amount, discount, name, equally, item);
+        item.setPrice(item.getPrice() * item.getAmount());
         itemRepository.save(item);
         Set<Item> items = party.getItems();
         items.removeIf(item1 -> item1.getId().equals(UUID.fromString(itemId)));
@@ -189,8 +190,8 @@ public class PartyServiceImpl implements PartyService {
 
     private void updateItemFieldsIfPresent(Double price, Integer amount, Double discount,
                                            String name, Boolean equally, Item item) {
-        Optional.ofNullable(price).ifPresent(item::setPrice);
         Optional.ofNullable(amount).ifPresent(item::setAmount);
+        Optional.ofNullable(price).ifPresent(item::setPrice);
         Optional.ofNullable(discount).ifPresent(item::setDiscount);
         Optional.ofNullable(name).ifPresent(item::setName);
         Optional.ofNullable(equally).ifPresent(item::setEqually);
