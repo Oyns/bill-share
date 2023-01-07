@@ -156,7 +156,6 @@ public class PartyServiceImpl implements PartyService {
         User owner = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new EntityNotFoundException("No party initiator with this id."));
         updateItemFieldsIfPresent(price, amount, discount, name, equally, item);
-        item.setPrice(item.getPrice() * item.getAmount());
         itemRepository.save(item);
         Set<Item> items = party.getItems();
         items.removeIf(item1 -> item1.getId().equals(UUID.fromString(itemId)));
