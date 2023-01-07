@@ -28,7 +28,6 @@ import oyns.billshare.user.dto.NewUserDto;
 import oyns.billshare.user.dto.UserDto;
 import oyns.billshare.user.model.User;
 import oyns.billshare.user.repository.UserRepository;
-import oyns.billshare.user.service.UserService;
 
 import java.io.IOException;
 import java.util.*;
@@ -41,7 +40,7 @@ import static oyns.billshare.user.mapper.UserMapper.toUserFromNew;
 @EnableWebSocket
 @RequiredArgsConstructor
 @Slf4j
-public class WebSocketConfig implements WebSocketConfigurer, UserService {
+public class WebSocketConfig implements WebSocketConfigurer {
     private final PartyServiceImpl partyService;
     private final ItemServiceImpl itemService;
     private final UserRepository userRepository;
@@ -250,7 +249,6 @@ public class WebSocketConfig implements WebSocketConfigurer, UserService {
         };
     }
 
-    @Override
     public UserDto saveUser(NewUserDto newUserDto) throws IOException {
         log.info("Save user {}", newUserDto);
         Party party = partyRepository.findById(newUserDto.getPartyId())
