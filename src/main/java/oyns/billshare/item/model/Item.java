@@ -1,7 +1,6 @@
 package oyns.billshare.item.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -34,7 +33,7 @@ public class Item {
     @Column(name = "price")
     Double price;
 
-    @Positive
+    @PositiveOrZero
     @Column(name = "amount")
     Integer amount;
 

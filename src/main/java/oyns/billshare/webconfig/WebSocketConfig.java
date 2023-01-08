@@ -67,7 +67,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
                                            @NonNull Map<String, Object> attributes) {
                 String path = request.getURI().getPath();
                 String partyId = path.substring(path.lastIndexOf('/') + 1);
-                System.out.println(partyId);
                 attributes.put("partyId", partyId);
                 return true;
             }
@@ -114,7 +113,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
                         case "remove item" -> removeItem(jsonObject, message);
                         case "add user to item" -> addUserToItem(jsonObject, message);
                         case "remove user from item" -> removeUserFromItem(jsonObject, message);
-                        case "update item" -> validateItemUpdate(jsonObject, message);
+                        case "update item" -> validateItemUpdate(jsonObject, message, session);
                     }
                 }
             }
@@ -126,8 +125,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 FullPartyDto fullPartyDto = partyService.getPartyById(jsonObject.get("partyId").toString());
                 fullPartyDto.setType(jsonObject.get("type").toString());
                 for (WebSocketSession webSocketSession : sessions) {
-                        String path = Objects.requireNonNull(webSocketSession.getUri()).getPath();
-                        String partyId = path.substring(path.lastIndexOf('/') + 1);
+                    String path = Objects.requireNonNull(webSocketSession.getUri()).getPath();
+                    String partyId = path.substring(path.lastIndexOf('/') + 1);
                     if (webSocketSession.isOpen() && partyId.equals(fullPartyDto.getId().toString())) {
                         webSocketSession.sendMessage(new TextMessage(new JSONObject(fullPartyDto).toString()));
                     }
@@ -235,13 +234,25 @@ public class WebSocketConfig implements WebSocketConfigurer {
             }
 
             private void validateItemUpdate(JSONObject jsonObject,
-                                            TextMessage message) throws IOException {
+                                            TextMessage message, WebSocketSession session) throws IOException {
                 if (jsonObject.has("price")) {
-                    updateItemPrice(jsonObject);
+                    if (jsonObject.getDouble("price") < 0) {
+                        session.sendMessage(new TextMessage(sendErrorMessage()));
+                    } else {
+                        updateItemPrice(jsonObject);
+                    }
                 } else if (jsonObject.has("amount")) {
-                    updateItemAmount(jsonObject);
+                    if (jsonObject.getInt("amount") < 0) {
+                        session.sendMessage(new TextMessage(sendErrorMessage()));
+                    } else {
+                        updateItemAmount(jsonObject);
+                    }
                 } else if (jsonObject.has("discount")) {
-                    updateItemDiscount(jsonObject);
+                    if (jsonObject.getDouble("discount") < 0) {
+                        session.sendMessage(new TextMessage(sendErrorMessage()));
+                    } else {
+                        updateItemDiscount(jsonObject);
+                    }
                 } else if (jsonObject.has("name")) {
                     updateItemName(jsonObject);
                 } else if (jsonObject.has("equally")) {
@@ -250,6 +261,13 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 packingToJson(message);
             }
         };
+    }
+
+    private String sendErrorMessage() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", "error");
+        jsonObject.put("message", "Value must be positive or zero.");
+        return jsonObject.toString();
     }
 
     public UserDto saveUser(NewUserDto newUserDto) throws IOException {
