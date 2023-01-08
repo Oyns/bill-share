@@ -45,7 +45,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     private final ItemServiceImpl itemService;
     private final UserRepository userRepository;
     private final PartyRepository partyRepository;
-
     private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
 
     @Override
@@ -136,7 +135,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
             private void addUser(JSONObject jsonObject,
                                  TextMessage message) throws IOException {
                 partyService.addUserToParty(UserDto.builder()
-                        .name(jsonObject.get("userName").toString())
+                        .name(jsonObject.get("user").toString())
                         .build(), jsonObject.get("partyId").toString());
                 packingToJson(message);
             }
@@ -145,12 +144,23 @@ public class WebSocketConfig implements WebSocketConfigurer {
                                  TextMessage message,
                                  WebSocketSession session) throws IOException {
                 ItemDto itemDto = new ItemDto();
-                validateItemPrice(jsonObject, session, itemDto);
-                validateItemAmount(jsonObject, session, itemDto);
-                validateItemDiscount(jsonObject, session, itemDto);
-                itemDto.setName(jsonObject.getString("itemName"));
+                if (jsonObject.getDouble("price") < 0) {
+                    session.sendMessage(new TextMessage(sendErrorMessage()));
+                    return;
+                } else {
+                    itemDto.setPrice(jsonObject.getDouble("price"));
+                }
+                if (jsonObject.getInt("amount") < 0) {
+                    session.sendMessage(new TextMessage(sendErrorMessage()));
+                    return;
+                } else {
+                    itemDto.setAmount(jsonObject.getInt("amount"));
+                }
+                itemDto.setName(jsonObject.getString("item"));
                 itemDto.setId(UUID.fromString(jsonObject.get("userId").toString()));
-                itemService.saveItem(itemDto, jsonObject.get("partyId").toString(), jsonObject.get("userId").toString());
+                itemService.saveItem(itemDto,
+                        jsonObject.get("partyId").toString(),
+                        jsonObject.get("userId").toString());
                 packingToJson(message);
             }
 
@@ -237,7 +247,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
             }
 
             private void validateItemUpdate(JSONObject jsonObject,
-                                            TextMessage message, WebSocketSession session) throws IOException {
+                                            TextMessage message,
+                                            WebSocketSession session) throws IOException {
                 if (jsonObject.has("price")) {
                     if (jsonObject.getDouble("price") < 0) {
                         session.sendMessage(new TextMessage(sendErrorMessage()));
@@ -264,42 +275,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 packingToJson(message);
             }
         };
-    }
-
-    private void validateItemPrice(JSONObject jsonObject,
-                                   WebSocketSession session,
-                                   ItemDto itemDto) throws IOException {
-        if (jsonObject.has("price")) {
-            if (jsonObject.getDouble("price") < 0) {
-                session.sendMessage(new TextMessage(sendErrorMessage()));
-            } else {
-                itemDto.setPrice(jsonObject.getDouble("price"));
-            }
-        }
-    }
-
-    private void validateItemAmount(JSONObject jsonObject,
-                                    WebSocketSession session,
-                                    ItemDto itemDto) throws IOException {
-        if (jsonObject.has("amount")) {
-            if (jsonObject.getInt("amount") < 0) {
-                session.sendMessage(new TextMessage(sendErrorMessage()));
-            } else {
-                itemDto.setAmount(jsonObject.getInt("amount"));
-            }
-        }
-    }
-
-    private void validateItemDiscount(JSONObject jsonObject,
-                                      WebSocketSession session,
-                                      ItemDto itemDto) throws IOException {
-        if (jsonObject.has("discount")) {
-            if (jsonObject.getDouble("discount") < 0 || jsonObject.getDouble("discount") >= 1) {
-                session.sendMessage(new TextMessage(sendErrorMessage()));
-            } else {
-                itemDto.setDiscount(jsonObject.getDouble("discount"));
-            }
-        }
     }
 
     private String sendErrorMessage() {
