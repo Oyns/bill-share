@@ -108,7 +108,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
                     JSONObject jsonObject = new JSONObject(payload);
                     switch (jsonObject.get("type").toString()) {
                         case "add user" -> addUser(jsonObject, message);
-                        case "add item" -> addItem(jsonObject, message);
+                        case "add item" -> addItem(jsonObject, message, session);
                         case "remove user" -> removeUser(jsonObject, message);
                         case "remove item" -> removeItem(jsonObject, message);
                         case "add user to item" -> addUserToItem(jsonObject, message);
@@ -141,7 +141,12 @@ public class WebSocketConfig implements WebSocketConfigurer {
                 packingToJson(message);
             }
 
-            private void addItem(JSONObject jsonObject, TextMessage message) throws IOException {
+            private void addItem(JSONObject jsonObject,
+                                 TextMessage message,
+                                 WebSocketSession session) throws IOException {
+                validateItemPrice(jsonObject, session);
+                validateItemAmount(jsonObject, session);
+                validateItemDiscount(jsonObject, session);
                 itemService.saveItem(ItemDto.builder()
                         .name(jsonObject.get("itemName").toString())
                         .price(jsonObject.getDouble("itemPrice"))
@@ -236,23 +241,14 @@ public class WebSocketConfig implements WebSocketConfigurer {
             private void validateItemUpdate(JSONObject jsonObject,
                                             TextMessage message, WebSocketSession session) throws IOException {
                 if (jsonObject.has("price")) {
-                    if (jsonObject.getDouble("price") < 0) {
-                        session.sendMessage(new TextMessage(sendErrorMessage()));
-                    } else {
-                        updateItemPrice(jsonObject);
-                    }
+                    validateItemPrice(jsonObject, session);
+                    updateItemPrice(jsonObject);
                 } else if (jsonObject.has("amount")) {
-                    if (jsonObject.getInt("amount") < 0) {
-                        session.sendMessage(new TextMessage(sendErrorMessage()));
-                    } else {
-                        updateItemAmount(jsonObject);
-                    }
+                    validateItemAmount(jsonObject, session);
+                    updateItemAmount(jsonObject);
                 } else if (jsonObject.has("discount")) {
-                    if (jsonObject.getDouble("discount") < 0) {
-                        session.sendMessage(new TextMessage(sendErrorMessage()));
-                    } else {
-                        updateItemDiscount(jsonObject);
-                    }
+                    validateItemDiscount(jsonObject, session);
+                    updateItemDiscount(jsonObject);
                 } else if (jsonObject.has("name")) {
                     updateItemName(jsonObject);
                 } else if (jsonObject.has("equally")) {
@@ -263,10 +259,37 @@ public class WebSocketConfig implements WebSocketConfigurer {
         };
     }
 
+    private void validateItemPrice(JSONObject jsonObject,
+                                   WebSocketSession session) throws IOException {
+        if (jsonObject.has("price")) {
+            if (jsonObject.getDouble("price") < 0) {
+                session.sendMessage(new TextMessage(sendErrorMessage()));
+            }
+        }
+    }
+
+    private void validateItemAmount(JSONObject jsonObject,
+                                    WebSocketSession session) throws IOException {
+        if (jsonObject.has("amount")) {
+            if (jsonObject.getInt("amount") < 0) {
+                session.sendMessage(new TextMessage(sendErrorMessage()));
+            }
+        }
+    }
+
+    private void validateItemDiscount(JSONObject jsonObject,
+                                      WebSocketSession session) throws IOException {
+        if (jsonObject.has("discount")) {
+            if (jsonObject.getDouble("discount") < 0 || jsonObject.getDouble("discount") >= 1) {
+                session.sendMessage(new TextMessage(sendErrorMessage()));
+            }
+        }
+    }
+
     private String sendErrorMessage() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type", "error");
-        jsonObject.put("message", "Value must be positive or zero.");
+        jsonObject.put("message", "Value must be positive or zero. Else in case of discount not more then 1.");
         return jsonObject.toString();
     }
 
