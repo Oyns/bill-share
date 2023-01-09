@@ -33,9 +33,9 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto saveItem(ItemDto itemDto, String partyId, String userId) {
         log.info("Save item {}, partyId {}, userId {}", itemDto, partyId, userId);
         User user = userRepository.findById(UUID.fromString(userId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет пользователя с таким id."));
+                .orElseThrow(() -> new EntityNotFoundException("No user with this id."));
         Party party = partyRepository.findById(UUID.fromString(partyId))
-                .orElseThrow(() -> new EntityNotFoundException("Пати с таким id не существует."));
+                .orElseThrow(() -> new EntityNotFoundException("No party with this id."));
         itemDto.setUsers(Set.of(ItemDto.User.builder()
                 .id(user.getId())
                 .name(user.getName())

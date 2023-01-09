@@ -55,7 +55,7 @@ public class PartyServiceImpl implements PartyService {
     public void addUserToParty(UserDto userDto, String partyId) {
         log.info("Save user {} to party {}", userDto, partyId);
         Party party = partyRepository.findById(UUID.fromString(partyId))
-                .orElseThrow(() -> new ValidationException("Нет пати с таким id."));
+                .orElseThrow(() -> new ValidationException("No party with this id."));
         User user = userRepository.save(toUser(userDto));
         Set<User> users = party.getUsers();
         users.add(user);
@@ -67,9 +67,9 @@ public class PartyServiceImpl implements PartyService {
     public FullPartyDto getPartyById(String partyId) {
         log.info("Get party {}", partyId);
         Party party = partyRepository.findById(UUID.fromString(partyId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет пати с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("No party with this id."));
         User user = userRepository.findById(party.getInitiator())
-                .orElseThrow(() -> new EntityNotFoundException("Нет инициатора с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("No party initiator with this id."));
         FullPartyDto fullPartyDto = toFullPartyDto(party,
                 new User(user.getId(), user.getName()));
         Set<FullPartyDto.Item> items = fullPartyDto.getItems();
@@ -87,18 +87,22 @@ public class PartyServiceImpl implements PartyService {
     public void removeUserFromParty(String userId, String partyId) {
         log.info("Delete user {} from party {}", userId, partyId);
         Party party = partyRepository.findById(UUID.fromString(partyId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет пати с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("No party with this id."));
         Set<User> users = party.getUsers();
-        users.removeIf(user -> user.getId().equals(UUID.fromString(userId)));
-        party.setUsers(users);
-        partyRepository.save(party);
+        if (party.getInitiator().equals(UUID.fromString(userId))) {
+            throw new ValidationException("Party leader can't be removed.");
+        } else {
+            users.removeIf(user -> user.getId().equals(UUID.fromString(userId)));
+            party.setUsers(users);
+            partyRepository.save(party);
+        }
     }
 
     @Override
     public void removeItemFromParty(String itemId, String partyId) {
         log.info("Delete item {} from party {}", itemId, partyId);
         Party party = partyRepository.findById(UUID.fromString(partyId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет пати с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("No party with this id."));
         Set<Item> items = party.getItems();
         items.removeIf(item -> item.getId().equals(UUID.fromString(itemId)));
         party.setItems(items);
@@ -109,13 +113,13 @@ public class PartyServiceImpl implements PartyService {
     public FullPartyDto addUserToItem(String userId, String partyId, String itemId, Integer value) {
         log.info("Add user {} with value {} to item {} in party {}", userId, value, itemId, partyId);
         Party party = partyRepository.findById(UUID.fromString(partyId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет пати с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("No party with this id."));
         Item item = itemRepository.findById(UUID.fromString(itemId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет вещи с таким id."));
+                .orElseThrow(() -> new EntityNotFoundException("No item with this id."));
         User user = userRepository.findById(UUID.fromString(userId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет инициатора с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("No user with this id."));
         User owner = userRepository.findById(party.getInitiator())
-                .orElseThrow(() -> new EntityNotFoundException("Нет инициатора с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("No party initiator with this id."));
         Set<User> users = item.getUsers();
         Set<Item> items = party.getItems();
         users.add(user);
@@ -128,11 +132,11 @@ public class PartyServiceImpl implements PartyService {
     public FullPartyDto removeUserFromItem(String userId, String partyId, String itemId) {
         log.info("Add user {} with to item {} in party {}", userId, itemId, partyId);
         Party party = partyRepository.findById(UUID.fromString(partyId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет пати с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("No party with this id."));
         Item item = itemRepository.findById(UUID.fromString(itemId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет вещи с таким id."));
+                .orElseThrow(() -> new EntityNotFoundException("No item with this id."));
         User owner = userRepository.findById(party.getInitiator())
-                .orElseThrow(() -> new EntityNotFoundException("Нет инициатора с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("No party initiator with this id."));
         Set<User> users = item.getUsers();
         Set<Item> items = party.getItems();
         users.removeIf(user -> user.getId().equals(UUID.fromString(userId)));
@@ -146,11 +150,11 @@ public class PartyServiceImpl implements PartyService {
                                           Double price, Integer amount, Double discount,
                                           String name, Boolean equally) {
         Party party = partyRepository.findById(UUID.fromString(partyId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет пати с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("No party with this id."));
         Item item = itemRepository.findById(UUID.fromString(itemId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет вещи с таким id."));
+                .orElseThrow(() -> new EntityNotFoundException("No item with this id."));
         User owner = userRepository.findById(UUID.fromString(userId))
-                .orElseThrow(() -> new EntityNotFoundException("Нет инициатора с таким id"));
+                .orElseThrow(() -> new EntityNotFoundException("No party initiator with this id."));
         updateItemFieldsIfPresent(price, amount, discount, name, equally, item);
         itemRepository.save(item);
         Set<Item> items = party.getItems();
@@ -185,8 +189,8 @@ public class PartyServiceImpl implements PartyService {
 
     private void updateItemFieldsIfPresent(Double price, Integer amount, Double discount,
                                            String name, Boolean equally, Item item) {
-        Optional.ofNullable(price).ifPresent(item::setPrice);
         Optional.ofNullable(amount).ifPresent(item::setAmount);
+        Optional.ofNullable(price).ifPresent(item::setPrice);
         Optional.ofNullable(discount).ifPresent(item::setDiscount);
         Optional.ofNullable(name).ifPresent(item::setName);
         Optional.ofNullable(equally).ifPresent(item::setEqually);

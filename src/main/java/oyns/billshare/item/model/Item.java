@@ -1,6 +1,7 @@
 package oyns.billshare.item.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import oyns.billshare.user.model.User;
@@ -28,15 +29,18 @@ public class Item {
     @Column(name = "item_name", nullable = false)
     String name;
 
+    @PositiveOrZero
     @Column(name = "price")
     Double price;
 
+    @PositiveOrZero
     @Column(name = "amount")
     Integer amount;
 
     @Column(name = "equally")
     Boolean equally;
 
+    @PositiveOrZero
     @Column(name = "discount")
     Double discount;
     @Column(name = "user_id")
